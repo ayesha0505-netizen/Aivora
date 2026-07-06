@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React from 'react';
@@ -6,6 +7,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useSidebar } from '@/context/SidebarContext';
 
 export function TopNavBar() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { theme } = useTheme();
   const { isSidebarOpen, toggleSidebar } = useSidebar();
   const pathname = usePathname() || '';

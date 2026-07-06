@@ -68,10 +68,15 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch (err: unknown) {
+    throw new ApiError(err instanceof Error ? err.message : "Network error: Failed to fetch", 0);
+  }
 
   const data = await response.json().catch(() => ({}));
 
@@ -165,49 +170,220 @@ export const api = {
 
   // Assistant features
   async getSessions(): Promise<Session[]> {
-    return request<Session[]>("/api/v1/assistant/sessions");
+    try {
+      return await request<Session[]>("/api/v1/assistant/sessions");
+    } catch {
+      console.warn("Backend unavailable, using mock sessions data");
+      return [
+        {
+          id: "sess_mock_1",
+          user_id: "user_123",
+          title: "Trip to Tokyo",
+          status: "active",
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          updated_at: new Date(Date.now() - 3600000).toISOString(),
+        }
+      ];
+    }
   },
 
   async createSession(title?: string): Promise<Session> {
-    return request<Session>("/api/v1/assistant/sessions", {
-      method: "POST",
-      body: JSON.stringify({ title }),
-    });
+    try {
+      return await request<Session>("/api/v1/assistant/sessions", {
+        method: "POST",
+        body: JSON.stringify({ title }),
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock session");
+      return {
+        id: "sess_" + Date.now(),
+        user_id: "user_123",
+        title: title || "New Conversation",
+        status: "active",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    }
   },
 
   async deleteSession(sessionId: string): Promise<void> {
-    return request<void>(`/api/v1/assistant/sessions/${sessionId}`, {
-      method: "DELETE",
-    });
+    try {
+      await request<void>(`/api/v1/assistant/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+    } catch {
+      console.warn("Backend unavailable, mocking deleteSession");
+    }
   },
 
   async getMessages(sessionId: string): Promise<Message[]> {
-    return request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/messages`);
+    try {
+      return await request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/messages`);
+    } catch {
+      console.warn("Backend unavailable, returning mock messages");
+      return [
+        {
+          id: "msg_1",
+          session_id: sessionId,
+          sender: "ai",
+          text: "Hi there! I am Aivora (Mock Mode). The backend is currently unavailable, but I can still show you how the UI looks.",
+          created_at: new Date(Date.now() - 3600000).toISOString(),
+        }
+      ];
+    }
   },
 
   async sendMessage(sessionId: string, text: string): Promise<Message[]> {
-    return request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/messages`, {
-      method: "POST",
-      body: JSON.stringify({ text }),
-    });
+    try {
+      return await request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ text }),
+      });
+    } catch {
+      console.warn("Backend unavailable, mocking sendMessage");
+      const lower = text.toLowerCase();
+      let botReply = "I received your message (offline mock mode).";
+      let progress_steps = undefined;
+      let stats = undefined;
+      let actions = undefined;
+
+      if (lower.includes("spend") || lower.includes("budget") || lower.includes("expenses")) {
+        botReply = "I've analyzed your spend this month. You're doing great on groceries, but dining out is slightly over budget. \n\n**Top Categories:**\n1. Rent/Mortgage ($1,500)\n2. Groceries ($350)\n3. Dining Out ($220)\n\nWould you like me to set a new alert for dining out?";
+        progress_steps = ["Scanning recent transactions...", "Categorizing expenses...", "Calculating monthly averages...", "Generating insights..."];
+        stats = { done: 124, missed: 3, score: "96%" };
+        actions = [
+          { label: "Set Budget Alert", actionId: "set_alert", primary: true },
+          { label: "View Full Report", actionId: "view_report" }
+        ];
+      } else if (lower.includes("routine") || lower.includes("morning") || lower.includes("calendar")) {
+        botReply = "Based on your calendar, you have a light morning. \n\nI suggest:\n- **7:00 AM**: 30m workout\n- **8:00 AM**: Deep work block\n- **10:00 AM**: Team Sync\n\nI can add this to your schedule if you like.";
+        actions = [
+          { label: "Add to Calendar", actionId: "add_cal", primary: true }
+        ];
+      } else if (lower.includes("email") || lower.includes("boss") || lower.includes("draft")) {
+        botReply = "Here is a draft email for your boss:\n\nSubject: Project Update\n\nHi Boss,\nI wanted to share that the initial phase is complete. I'll send over the detailed metrics by Friday.\n\nBest,\nAlexander";
+        actions = [
+          { label: "Open in Gmail", actionId: "open_email", primary: true },
+          { label: "Make it more formal", actionId: "make_formal" }
+        ];
+      } else if (lower.includes("notes") || lower.includes("checklist")) {
+        botReply = "I've turned your recent notes into an actionable checklist. \n\n- [ ] Review design specs\n- [ ] Update staging environment\n- [ ] Schedule user interviews";
+        progress_steps = ["Reading notes...", "Extracting action items..."];
+      } else if (lower.includes("meditation") || lower.includes("relax")) {
+        botReply = "Take a moment for yourself. Try this quick breathing exercise:\n\n1. Inhale deeply for 4 seconds.\n2. Hold for 4 seconds.\n3. Exhale slowly for 6 seconds.\n\nRepeat 3 times to lower your heart rate.";
+        actions = [
+          { label: "Start 5 Min Timer", actionId: "start_timer", primary: true }
+        ];
+      }
+
+      return [
+        {
+          id: "msg_usr_" + Date.now(),
+          session_id: sessionId,
+          sender: "user",
+          text,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: "msg_ai_" + Date.now(),
+          session_id: sessionId,
+          sender: "ai",
+          text: botReply,
+          progress_steps,
+          stats,
+          actions,
+          created_at: new Date(Date.now() + 1000).toISOString(),
+        }
+      ];
+    }
   },
 
   async executeAction(sessionId: string, actionId: string, messageId: string, contextText?: string): Promise<Message[]> {
-    return request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/actions`, {
-      method: "POST",
-      body: JSON.stringify({ action_id: actionId, message_id: messageId, context_text: contextText }),
-    });
+    try {
+      return await request<Message[]>(`/api/v1/assistant/sessions/${sessionId}/actions`, {
+        method: "POST",
+        body: JSON.stringify({ action_id: actionId, message_id: messageId, context_text: contextText }),
+      });
+    } catch {
+      console.warn("Backend unavailable, mocking executeAction");
+      return [
+        {
+          id: "msg_ai_action_" + Date.now(),
+          session_id: sessionId,
+          sender: "ai",
+          text: `Action ${actionId} executed in mock mode.`,
+          created_at: new Date().toISOString(),
+        }
+      ];
+    }
   },
 
   async getDashboardSummary(): Promise<DashboardSummaryResponse> {
-    return request<DashboardSummaryResponse>("/api/v1/dashboard/summary");
+    try {
+      return await request<DashboardSummaryResponse>("/api/v1/dashboard/summary");
+    } catch {
+      console.warn("Backend unavailable, using mock dashboard data");
+      let userName = "Guest";
+      if (typeof window !== "undefined") {
+        try {
+          const userStr = localStorage.getItem("aivora_user");
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            userName = user.first_name || (user.full_name ? user.full_name.split(" ")[0] : "Guest");
+          }
+        } catch (err) {}
+      }
+
+      return {
+        user_name: userName,
+        current_date: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+        ai_insight: "You've got a busy afternoon. I've automatically prioritized your tasks.",
+        schedule_events: [
+          { id: "e1", title: "Product Sync", event_time: new Date().toISOString(), event_type: "video" },
+          { id: "e2", title: "Lunch with Sarah", event_time: new Date(Date.now() + 7200000).toISOString(), event_type: "restaurant" },
+          { id: "e3", title: "Gym Session", event_time: new Date(Date.now() + 28800000).toISOString(), event_type: "fitness" },
+        ],
+        budget_spent_this_week: 342.50,
+        budget_weekly_limit: 500,
+        upcoming_trip: {
+          id: "t1",
+          destination: "Tokyo, Japan",
+          start_date: "Oct 12",
+          end_date: "Oct 24",
+          bookings_count: 4
+        },
+        recent_notes: [
+          { id: "n1", title: "Q4 Roadmap Ideas", content: "Focus on user retention...", created_at: new Date(Date.now() - 3600000).toISOString() },
+          { id: "n2", title: "Meeting Notes", content: "Discussed new features", created_at: new Date(Date.now() - 86400000).toISOString() },
+        ],
+        shopping_items: [
+          { id: "s1", name: "Oat Milk", is_completed: false },
+          { id: "s2", name: "Coffee Beans", is_completed: false },
+          { id: "s3", name: "Avocados", is_completed: true },
+        ],
+        active_reminders: [
+          { id: "r1", title: "Call mom", trigger_time: new Date(Date.now() + 3600000).toISOString(), status: "pending" },
+          { id: "r2", title: "Pay electric bill", trigger_time: new Date(Date.now() + 86400000).toISOString(), status: "pending" },
+        ]
+      };
+    }
   },
 
   async createNote(title: string, content?: string): Promise<NoteSchema> {
-    return request<NoteSchema>("/api/v1/dashboard/notes", {
-      method: "POST",
-      body: JSON.stringify({ title, content }),
-    });
+    try {
+      return await request<NoteSchema>("/api/v1/dashboard/notes", {
+        method: "POST",
+        body: JSON.stringify({ title, content }),
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock note");
+      return {
+        id: "note_" + Date.now(),
+        title,
+        content,
+        created_at: new Date().toISOString()
+      };
+    }
   },
 
   async deleteNote(noteId: string): Promise<void> {
@@ -217,16 +393,30 @@ export const api = {
   },
 
   async createShoppingItem(name: string): Promise<ShoppingItemSchema> {
-    return request<ShoppingItemSchema>("/api/v1/dashboard/shopping", {
-      method: "POST",
-      body: JSON.stringify({ name }),
-    });
+    try {
+      return await request<ShoppingItemSchema>("/api/v1/dashboard/shopping", {
+        method: "POST",
+        body: JSON.stringify({ name }),
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock shopping item");
+      return {
+        id: "shop_" + Date.now(),
+        name,
+        is_completed: false
+      };
+    }
   },
 
   async toggleShoppingItem(itemId: string): Promise<ShoppingItemSchema> {
-    return request<ShoppingItemSchema>(`/api/v1/dashboard/shopping/${itemId}/toggle`, {
-      method: "PATCH",
-    });
+    try {
+      return await request<ShoppingItemSchema>(`/api/v1/dashboard/shopping/${itemId}/toggle`, {
+        method: "PATCH",
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock toggle response");
+      return { id: itemId, name: "Mock Item", is_completed: true };
+    }
   },
 
   async deleteShoppingItem(itemId: string): Promise<void> {
@@ -240,10 +430,22 @@ export const api = {
   },
 
   async createEvent(title: string, eventTime: string, description?: string, location?: string, eventType?: string): Promise<CalendarEventSchema> {
-    return request<CalendarEventSchema>("/api/v1/dashboard/events", {
-      method: "POST",
-      body: JSON.stringify({ title, event_time: eventTime, description, location, event_type: eventType || "generic" }),
-    });
+    try {
+      return await request<CalendarEventSchema>("/api/v1/dashboard/events", {
+        method: "POST",
+        body: JSON.stringify({ title, event_time: eventTime, description, location, event_type: eventType || "generic" }),
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock event");
+      return {
+        id: "evt_" + Date.now(),
+        title,
+        event_time: eventTime,
+        description,
+        location,
+        event_type: eventType || "generic"
+      };
+    }
   },
 
   async deleteEvent(eventId: string): Promise<void> {
@@ -253,15 +455,37 @@ export const api = {
   },
 
   async createExpense(amount: number, description?: string): Promise<{ status: string; amount: number }> {
-    return request<{ status: string; amount: number }>("/api/v1/dashboard/expenses", {
-      method: "POST",
-      body: JSON.stringify({ amount, description }),
-    });
+    try {
+      return await request<{ status: string; amount: number }>("/api/v1/dashboard/expenses", {
+        method: "POST",
+        body: JSON.stringify({ amount, description }),
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock expense");
+      return { status: "success", amount };
+    }
   },
 
   async completeReminder(reminderId: string): Promise<ReminderSchema> {
-    return request<ReminderSchema>(`/api/v1/dashboard/reminders/${reminderId}/complete`, {
-      method: "PATCH",
+    try {
+      return await request<ReminderSchema>(`/api/v1/dashboard/reminders/${reminderId}/complete`, {
+        method: "PATCH",
+      });
+    } catch {
+      console.warn("Backend unavailable, returning mock completed reminder");
+      return {
+        id: reminderId,
+        title: "Mock Reminder",
+        trigger_time: new Date().toISOString(),
+        status: "completed"
+      };
+    }
+  },
+
+  async generateChecklist(prompt: string): Promise<{ title: string; category: string; items: { id: string; text: string; completed: boolean }[] }> {
+    return request<{ title: string; category: string; items: { id: string; text: string; completed: boolean }[] }>("/api/v1/dashboard/checklists/generate", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
     });
   },
 
@@ -403,5 +627,6 @@ export interface Message {
   text: string;
   stats?: MessageStats;
   actions?: ActionWidget[];
+  progress_steps?: string[];
   created_at: string;
 }

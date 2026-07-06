@@ -11,20 +11,20 @@
     <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
     <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
     <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-    <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI" />
+    <img src="https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white" alt="Gemini" />
     <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
   </p>
 </div>
 
 ---
 
-## 2. Problem Statement
+## 1. Problem Statement
 Managing daily tasks, appointments, budgets, and travel plans typically requires juggling multiple disconnected applications. Users spend too much time navigating between calendar apps, note-taking apps, weather apps, and financial trackers, leading to fragmented information and cognitive overload.
 
-## 3. Solution Overview
+## 2. Solution Overview
 Aivora centralizes personal management into a single, unified dashboard powered by a sophisticated multi-agent AI system. Instead of manually organizing life across various platforms, users interact naturally with the Aivora Assistant, which intelligently routes tasks to specialized agents (planning, budgeting, travel) that automate scheduling, list creation, and organization behind the scenes.
 
-## 4. Key Features
+## 3. Key Features
 - **AI Assistant:** A conversational interface that understands natural language and delegates tasks to specialized AI agents.
 - **Calendar:** Automated event scheduling and visualization.
 - **Reminders:** Smart, categorized reminders with priority tagging.
@@ -36,13 +36,13 @@ Aivora centralizes personal management into a single, unified dashboard powered 
 - **User Authentication:** Secure access powered by Firebase Auth.
 - **Personal Dashboard:** A holistic view of the user's daily life, unified in one elegant UI.
 
-## 5. System Architecture
+## 4. System Architecture
 
 ### Overall System
 ```mermaid
 graph TD
     Client[Next.js Frontend] -->|REST / API| Backend[FastAPI Backend]
-    Backend -->|LLM Calls| AI[OpenAI / Google ADK]
+    Backend -->|LLM Calls| AI[Google Gemini / Google ADK]
     Backend -->|Read/Write| DB[(Relational Database)]
     Backend -->|MCP Protocols| MCP[Model Context Protocol Servers]
 ```
@@ -84,7 +84,7 @@ graph TD
     User --> TravelPlans
 ```
 
-## 6. Multi-Agent Architecture
+## 5. Multi-Agent Architecture
 Aivora relies on a hierarchical multi-agent system to efficiently tackle user prompts:
 - **Coordinator Agent:** The orchestrator that receives the initial user prompt, analyzes intent, and routes tasks to the appropriate sub-agents.
 - **Planner Agent:** Handles time management and inserts data into the Calendar system.
@@ -93,25 +93,25 @@ Aivora relies on a hierarchical multi-agent system to efficiently tackle user pr
 - **Budget Agent:** Parses financial data, sets limits, and logs expenses.
 - **Shopping Agent:** Identifies purchasable items from conversations and adds them to Shopping Lists.
 
-## 7. MCP Integration
+## 6. MCP Integration
 Aivora utilizes the Model Context Protocol (MCP) to standardize external tool access for agents:
 - **Calendar MCP:** Provides secure, standardized access to read/write events.
 - **Weather MCP:** Fetches real-time weather forecasts and conditions for the dashboard.
 - **Maps MCP:** Used by the Travel Agent to calculate distances and fetch location data.
 - **File System MCP:** Allows secure, sandboxed storage and retrieval of user-generated artifacts (like generated PDFs or exported itineraries).
 
-## 8. Tech Stack
+## 7. Tech Stack
 
 | Category | Technologies |
 | :--- | :--- |
 | **Frontend** | Next.js 15 (App Router), React 19, Tailwind CSS, Framer Motion |
 | **Backend** | Python 3.13, FastAPI, SQLAlchemy, Pydantic |
-| **AI / Agents** | Google ADK, OpenAI APIs, Multi-Agent Orchestration |
+| **AI / Agents** | Google ADK, Google Gemini APIs, Multi-Agent Orchestration |
 | **Database** | SQLite (Local) / Supabase PostgreSQL (Production) |
 | **Authentication** | Firebase Authentication, JWT |
 | **Deployment** | Vercel (Frontend), Railway (Backend), Supabase (DB) |
 
-## 9. Folder Structure
+## 8. Folder Structure
 ```text
 Aivora/
 ├── app/                  # FastAPI Backend
@@ -134,7 +134,7 @@ Aivora/
 └── README.md             # Project documentation
 ```
 
-## 10. Database Schema
+## 9. Database Schema
 
 ```mermaid
 erDiagram
@@ -184,7 +184,7 @@ erDiagram
     USERS ||--o{ TRAVEL_PLANS : "has"
 ```
 
-## 11. API Architecture
+## 10. API Architecture
 
 ### Authentication
 - `POST /api/v1/auth/verify` - Verify Firebase token and create/get user session.
@@ -203,7 +203,7 @@ erDiagram
 - `POST /api/v1/dashboard/notes` - Create a note.
 - `POST /api/v1/dashboard/shopping` - Add item to shopping list.
 
-## 12. Security
+## 11. Security
 - **Firebase Authentication:** Secure login using Google's robust identity platform.
 - **JWT (JSON Web Tokens):** Token-based authentication used for secure communication between frontend and backend.
 - **Protected Routes:** Next.js middleware and FastAPI dependencies ensure only authenticated users can access personal data.
@@ -211,26 +211,22 @@ erDiagram
 - **Environment Variables:** Secrets (API keys, DB credentials) are managed securely via `.env` files and deployment platform secret managers.
 - **Input Validation:** Strict payload validation via Pydantic on the backend prevents injection and malformed data attacks.
 
-## 13. Screenshots
+## 12. Screenshots
 
 | Landing Page | Login | Dashboard |
 | :---: | :---: | :---: |
-| ![Landing Page Placeholder](https://via.placeholder.com/300x200.png?text=Landing+Page) | ![Login Placeholder](https://via.placeholder.com/300x200.png?text=Login) | ![Dashboard Placeholder](https://via.placeholder.com/300x200.png?text=Dashboard) |
+| ![Landing Page](./assets/landing-page.png) | ![Login](./assets/login.png) | ![Dashboard](./assets/dashboard.png) |
 
 | AI Chat | Calendar | Notes |
 | :---: | :---: | :---: |
-| ![AI Chat Placeholder](https://via.placeholder.com/300x200.png?text=AI+Chat) | ![Calendar Placeholder](https://via.placeholder.com/300x200.png?text=Calendar) | ![Notes Placeholder](https://via.placeholder.com/300x200.png?text=Notes) |
+| ![AI Chat](./assets/ai-chat.png) | ![Calendar](./assets/calendar.png) | ![Notes](./assets/notes.png) |
 
 | Travel Planner | Shopping List | Budget Planner |
 | :---: | :---: | :---: |
-| ![Travel Planner Placeholder](https://via.placeholder.com/300x200.png?text=Travel+Planner) | ![Shopping List Placeholder](https://via.placeholder.com/300x200.png?text=Shopping+List) | ![Budget Planner Placeholder](https://via.placeholder.com/300x200.png?text=Budget+Planner) |
+| ![Travel Planner](./assets/travel-planner.png) | ![Shopping List](./assets/shopping-list.png) | ![Budget Planner](./assets/budget-planner.png) |
 
-<div align="center">
-  <img src="https://via.placeholder.com/300x200.png?text=Settings" alt="Settings Placeholder" />
-  <p><i>Settings</i></p>
-</div>
 
-## 14. Installation Guide
+## 13. Installation Guide
 
 ### Prerequisites
 - Node.js (v18+)
@@ -273,7 +269,7 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
-## 15. Environment Variables
+## 14. Environment Variables
 
 Create a `.env` file in the root backend directory:
 
@@ -281,8 +277,8 @@ Create a `.env` file in the root backend directory:
 # Database
 DATABASE_URL=sqlite+aiosqlite:///./aivora.db
 
-# OpenAI / AI Providers
-OPENAI_API_KEY=sk-your-openai-api-key-here
+# Gemini / AI Providers
+GEMINI_API_KEY=your-gemini-api-key-here
 
 # Security
 JWT_SECRET=your_super_secret_jwt_key
@@ -304,13 +300,13 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-## 16. Deployment Guide
+## 15. Deployment Guide
 
 - **Next.js (Vercel):** Connect your GitHub repository to Vercel. Ensure the framework preset is set to Next.js and add the frontend environment variables in the Vercel dashboard. Set the Root Directory to `frontend`.
-- **FastAPI (Railway):** Deploy the backend using Railway. Connect the repository, set the root directory, and add your `.env` secrets (OpenAI API key, Database URL). Railway will auto-detect the FastAPI `uvicorn` setup.
+- **FastAPI (Railway):** Deploy the backend using Railway. Connect the repository, set the root directory, and add your `.env` secrets (Gemini API key, Database URL). Railway will auto-detect the FastAPI `uvicorn` setup.
 - **Database (Supabase):** Provision a Supabase PostgreSQL instance. Update the `DATABASE_URL` in the Railway environment variables to point to the Supabase connection string. Run Alembic migrations (if applicable) or rely on SQLAlchemy `create_all()` on startup.
 
-## 17. Kaggle Evaluation Mapping
+## 16. Kaggle Evaluation Mapping
 
 - **Google ADK Multi-Agent System:** Aivora employs a robust Coordinator-to-Subagent architecture to process complex tasks (travel, budget, scheduling).
 - **MCP Servers:** Standardized external tooling interactions via MCP protocols for Calendar and Weather APIs.
@@ -318,7 +314,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 - **Security Features:** JWT, Firebase Auth, and strict route protections ensure user data isolation.
 - **Deployability:** Cloud-native architecture prepared for immediate deployment on Vercel and Railway.
 
-## 18. Future Roadmap
+## 17. Future Roadmap
 
 *Note: The following features are planned for future iterations and are not currently implemented.*
 
@@ -330,8 +326,8 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 - **Admin Dashboard:** System-wide metrics and user management.
 - **Super Admin:** Elevated role for platform administration and configuration.
 
-## 19. License
+## 18. License
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## 20. Author
+## 19. Author
 Built for the Kaggle AI Agents Capstone Project.

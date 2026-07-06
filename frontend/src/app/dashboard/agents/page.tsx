@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 const agents = [
   { id: "planner", name: "Planner Agent", icon: "assignment", color: "from-primary to-primary/70", desc: "Orchestrates multi-step logic" },
@@ -15,7 +15,7 @@ const agents = [
   { id: "storage", name: "Storage Agent", icon: "cloud_sync", color: "from-cyan-500 to-teal-400", desc: "Persists outputs to GCS" },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -23,7 +23,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
 };

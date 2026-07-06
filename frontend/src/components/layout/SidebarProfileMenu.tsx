@@ -13,7 +13,7 @@ export function SidebarProfileMenu() {
 
   // Profile state
   const { user, logout } = useAuth();
-  
+
   const [fullName, setFullName] = useState("Guest User");
   const [username, setUsername] = useState("guest");
   const [bio, setBio] = useState(
@@ -23,7 +23,8 @@ export function SidebarProfileMenu() {
 
   useEffect(() => {
     if (user) {
-      setFullName(user.full_name || user.first_name ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "Guest User");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFullName(user.displayName ? user.displayName : "Guest User");
       setUsername(user.email ? user.email.split('@')[0] : "guest");
     }
   }, [user]);
@@ -123,9 +124,8 @@ export function SidebarProfileMenu() {
       {/* Sidebar User Profile Button */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className={`w-full flex items-center gap-3 px-2 py-2 rounded-xl group cursor-pointer transition-all ${
-          menuOpen ? "bg-primary/15 ring-2 ring-primary/30" : "hover:bg-surface-variant/50"
-        }`}
+        className={`w-full flex items-center gap-3 px-2 py-2 rounded-xl group cursor-pointer transition-all ${menuOpen ? "bg-primary/15 ring-2 ring-primary/30" : "hover:bg-surface-variant/50"
+          }`}
       >
         <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container pink-glow flex-shrink-0 group-hover:scale-105 transition-transform">
           <Image

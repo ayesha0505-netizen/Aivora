@@ -108,3 +108,19 @@ class DashboardSummaryResponse(BaseModel):
     recent_notes: list[NoteSchema]
     shopping_items: list[ShoppingItemSchema]
     active_reminders: list[ReminderSchema]
+
+
+class ChecklistGenerateRequest(BaseModel):
+    prompt: str
+
+
+class ChecklistItemSchema(BaseModel):
+    id: str
+    text: str
+    completed: bool
+
+
+class ChecklistGenerateResponse(BaseModel):
+    title: str
+    category: str
+    items: list[ChecklistItemSchema]

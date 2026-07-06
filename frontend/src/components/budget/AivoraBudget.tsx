@@ -59,28 +59,11 @@ interface DossierResult {
 
 const STORAGE_KEY = "aivora_budget_planner_data_v3";
 
-const INITIAL_CATEGORIES: ExpenseCategory[] = [
-  { id: "cat1", name: "🍔 Food", budget: 800, spent: 540, icon: "restaurant", colorClass: "bg-secondary", bgClass: "bg-secondary/10 text-secondary" },
-  { id: "cat2", name: "🏠 Housing", budget: 1800, spent: 1750, icon: "home", colorClass: "bg-primary", bgClass: "bg-primary/10 text-primary" },
-  { id: "cat3", name: "🚗 Transport", budget: 600, spent: 145, icon: "flight", colorClass: "bg-pink-500", bgClass: "bg-pink-500/10 text-pink-600" },
-  { id: "cat4", name: "🛒 Shopping", budget: 400, spent: 220, icon: "local_activity", colorClass: "bg-purple-500", bgClass: "bg-purple-500/10 text-purple-600" },
-  { id: "cat5", name: "💼 Work", budget: 300, spent: 150, icon: "work", colorClass: "bg-amber-500", bgClass: "bg-amber-500/10 text-amber-600" },
-  { id: "cat6", name: "💻 Tech", budget: 200, spent: 185, icon: "smart_toy", colorClass: "bg-tertiary", bgClass: "bg-tertiary/10 text-tertiary" },
-];
+const INITIAL_CATEGORIES: ExpenseCategory[] = [];
 
-const INITIAL_GOALS: SavingsGoal[] = [
-  { id: "g1", title: "Paris 2026 Trip Vault", target: 4500, current: 3200, icon: "flight_takeoff", badgeClass: "bg-pink-100 text-pink-800 dark:bg-pink-950/40 dark:text-pink-300", date: "Target: Aug 2026" },
-  { id: "g2", title: "New M4 MacBook Pro", target: 2400, current: 1850, icon: "laptop_mac", badgeClass: "bg-purple-100 text-purple-800 dark:bg-purple-950/40 dark:text-purple-300", date: "Target: Nov 2026" },
-  { id: "g3", title: "Emergency Fund (6 Mo)", target: 12000, current: 9500, icon: "health_and_safety", badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300", date: "Target: Dec 2026" },
-];
+const INITIAL_GOALS: SavingsGoal[] = [];
 
-const INITIAL_TRANSACTIONS: Transaction[] = [
-  { id: "tx1", title: "Whole Foods Organic Market", category: "🍔 Food", amount: 142.5, date: "Today, 4:30 PM", icon: "shopping_cart" },
-  { id: "tx2", title: "OpenAI ChatGPT Team Plan", category: "💻 Tech", amount: 30.0, date: "Yesterday", icon: "bolt" },
-  { id: "tx3", title: "Apple One Premier Bundle", category: "💻 Tech", amount: 37.95, date: "Jul 2", icon: "apple" },
-  { id: "tx4", title: "Equinox Fitness Club Monthly", category: "🛒 Shopping", amount: 210.0, date: "Jul 1", icon: "fitness_center" },
-  { id: "tx5", title: "Uber Black Ride - Midtown", category: "🚗 Transport", amount: 45.8, date: "Jun 28", icon: "directions_car" },
-];
+const INITIAL_TRANSACTIONS: Transaction[] = [];
 
 export function AivoraBudget() {
   // State initialization with localStorage persistence

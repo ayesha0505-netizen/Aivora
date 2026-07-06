@@ -5,77 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { api, DashboardSummaryResponse } from "@/lib/api";
 
-const fallbackData: DashboardSummaryResponse = {
-  user_name: "Sarah",
-  current_date: new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
-  ai_insight: "Your flight to London is in 2 days. I've prepared your packing list and shared the itinerary with Marcus.",
-  ai_action_suggestion: "View Full Itinerary",
-  schedule_events: [
-    {
-      id: "1",
-      title: "Design Sync: Project Aivora",
-      description: "Zoom Conference • Link Attached",
-      event_time: new Date(new Date().setHours(9, 0, 0, 0)).toISOString(),
-      event_type: "video",
-      location: "Zoom",
-    },
-    {
-      id: "2",
-      title: "Lunch with Michael",
-      description: "The Daily Roast, Soho",
-      event_time: new Date(new Date().setHours(13, 30, 0, 0)).toISOString(),
-      event_type: "restaurant",
-      location: "Soho",
-    },
-    {
-      id: "3",
-      title: "Gym: Lower Body Power",
-      description: "Equinox High Street",
-      event_time: new Date(new Date().setHours(16, 0, 0, 0)).toISOString(),
-      event_type: "fitness",
-      location: "Equinox",
-    },
-  ],
-  budget_spent_this_week: 1240.50,
-  budget_weekly_limit: 1600.00,
-  upcoming_trip: {
-    id: "trip-1",
-    destination: "London, UK",
-    start_date: "October 26",
-    end_date: "November 2",
-    budget_estimate: 1850.00,
-    bookings_count: 4,
-  },
-  recent_notes: [
-    {
-      id: "note-1",
-      title: "Project Brainstorming",
-      content: "Must remember to add the bento grid layout for the dashboard...",
-      created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
-    },
-    {
-      id: "note-2",
-      title: "Gift Ideas for Leo",
-      content: "Mechanical keyboard, vintage film camera, or premium coffee beans...",
-      created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
-    },
-    {
-      id: "note-3",
-      title: "Healthy Meal Prep",
-      content: "Quinoa salad, roasted chickpeas, and tahini dressing...",
-      created_at: new Date(Date.now() - 72 * 3600000).toISOString(),
-    },
-  ],
-  shopping_items: [
-    { id: "shop-1", name: "Whole Wheat Sourdough", is_completed: false },
-    { id: "shop-2", name: "Almond Milk (Unsweetened)", is_completed: true },
-    { id: "shop-3", name: "Organic Avocados (x3)", is_completed: false },
-  ],
-  active_reminders: [
-    { id: "rem-1", title: "Renew Insurance", trigger_time: new Date(Date.now() + 24 * 3600000).toISOString(), status: "pending" },
-    { id: "rem-2", title: "Call Mom", trigger_time: new Date(Date.now() + 48 * 3600000).toISOString(), status: "pending" },
-  ],
-};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -99,24 +28,9 @@ export default function DashboardPage() {
         setLoading(true);
         const res = await api.getDashboardSummary();
         setData(res);
-        localStorage.setItem("aivora_dashboard_data", JSON.stringify(res));
       } catch (err: unknown) {
-        console.warn("API offline or unauthenticated, falling back to local dashboard data:", err);
-        const localDataStr = localStorage.getItem("aivora_dashboard_data");
-        if (localDataStr) {
-          try {
-            const localData = JSON.parse(localDataStr);
-            localData.current_date = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-            setData(localData);
-          } catch {
-            fallbackData.current_date = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-            setData(fallbackData);
-          }
-        } else {
-          fallbackData.current_date = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-          setData(fallbackData);
-          localStorage.setItem("aivora_dashboard_data", JSON.stringify(fallbackData));
-        }
+        console.error("API error while fetching dashboard:", err);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -140,11 +54,10 @@ export default function DashboardPage() {
     );
     const newData = { ...data, shopping_items: updatedItems };
     setData(newData);
-    localStorage.setItem("aivora_dashboard_data", JSON.stringify(newData));
     try {
       await api.toggleShoppingItem(itemId);
     } catch (err) {
-      console.error("Failed to toggle item, state updated locally:", err);
+      console.error("Failed to toggle item:", err);
     }
   };
 
@@ -168,33 +81,6 @@ export default function DashboardPage() {
       setActiveModal(null);
     } catch (err) {
       console.error("Error creating entry:", err);
-      // Fallback update for offline/demo preview
-      if (data) {
-        let newData = { ...data };
-        if (activeModal === "note") {
-          const newNote = { id: `note-${Date.now()}`, title: modalTitle, content: modalContent, created_at: new Date().toISOString() };
-          newData = { ...newData, recent_notes: [newNote, ...newData.recent_notes] };
-        } else if (activeModal === "shopping") {
-          const newShop = { id: `shop-${Date.now()}`, name: modalTitle, is_completed: false };
-          newData = { ...newData, shopping_items: [newShop, ...newData.shopping_items] };
-        } else if (activeModal === "expense") {
-          const amt = parseFloat(modalAmount) || 0;
-          newData = { ...newData, budget_spent_this_week: newData.budget_spent_this_week + amt };
-        } else if (activeModal === "event") {
-          const todayStr = new Date().toISOString().split("T")[0];
-          const newEvt = {
-            id: `evt-${Date.now()}`,
-            title: modalTitle,
-            description: modalDesc,
-            event_time: new Date(`${todayStr}T${modalTime}:00`).toISOString(),
-            event_type: modalType,
-            location: modalLocation,
-          };
-          newData = { ...newData, schedule_events: [...newData.schedule_events, newEvt] };
-        }
-        setData(newData);
-        localStorage.setItem("aivora_dashboard_data", JSON.stringify(newData));
-      }
       setActiveModal(null);
     } finally {
       setIsSubmitting(false);
@@ -579,13 +465,8 @@ export default function DashboardPage() {
                         await api.completeReminder(rem.id);
                         const res = await api.getDashboardSummary();
                         setData(res);
-                      } catch {
-                        const newData = {
-                          ...data,
-                          active_reminders: data.active_reminders.filter((r) => r.id !== rem.id),
-                        };
-                        setData(newData);
-                        localStorage.setItem("aivora_dashboard_data", JSON.stringify(newData));
+                      } catch (err) {
+                        console.error("Failed to complete reminder:", err);
                       }
                     }}
                     className="flex items-start gap-3 cursor-pointer group p-1.5 rounded-lg hover:bg-secondary/10 transition-colors"

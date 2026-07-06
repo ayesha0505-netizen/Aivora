@@ -13,7 +13,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       <SideNavBar />
       <div 
         className={`flex flex-col flex-1 w-full min-h-screen transition-all duration-300 ${
-          isSidebarOpen ? "md:ml-64" : "md:ml-0"
+          isSidebarOpen ? "md:ml-72" : "md:ml-0"
         }`}
       >
         <TopNavBar />

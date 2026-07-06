@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { api } from "../../lib/api";
 
 interface ChecklistItem {
   id: string;
@@ -18,73 +19,52 @@ interface Checklist {
 }
 
 export function AivoraList() {
-  const [checklists, setChecklists] = useState<Checklist[]>([
-    {
-      id: "chk-1",
-      title: "Paris Trip Packing Essentials",
-      category: "Travel Prep",
-      badgeClass: "bg-primary-fixed text-on-primary-fixed-variant",
-      pinned: true,
-      items: [
-        { id: "i1", text: "Passport & travel insurance copies", completed: true },
-        { id: "i2", text: "Universal EU power adapter & power bank", completed: true },
-        { id: "i3", text: "Comfortable walking sneakers", completed: false },
-        { id: "i4", text: "French phrasebook & downloaded offline maps", completed: false },
-        { id: "i5", text: "AirTags for checked luggage", completed: true },
-      ],
-    },
-    {
-      id: "chk-2",
-      title: "Q3 AI Product Launch Roadmap",
-      category: "Work & Tech",
-      badgeClass: "bg-secondary-container text-on-secondary-container",
-      pinned: true,
-      items: [
-        { id: "j1", text: "Finalize system architecture diagrams", completed: true },
-        { id: "j2", text: "Conduct user feedback interviews (10 sessions)", completed: true },
-        { id: "j3", text: "Optimize prompt latency to under 400ms", completed: false },
-        { id: "j4", text: "Draft release notes and blog announcement", completed: false },
-      ],
-    },
-    {
-      id: "chk-3",
-      title: "Weekly Home & Apartment Reset",
-      category: "Chore List",
-      badgeClass: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
-      pinned: false,
-      items: [
-        { id: "k1", text: "Water indoor Monstera and Pothos plants", completed: true },
-        { id: "k2", text: "Change bed linens & wash towels", completed: false },
-        { id: "k3", text: "Vacuum living room and dust workstation", completed: false },
-        { id: "k4", text: "Meal prep protein salads for Mon-Wed", completed: false },
-      ],
-    },
-  ]);
+  const [checklists, setChecklists] = useState<Checklist[]>([]);
 
   const [newChkTitle, setNewChkTitle] = useState("");
   const [newChkCat, setNewChkCat] = useState("General Task");
   const [newChkItemText, setNewChkItemText] = useState<{ [key: string]: string }>({});
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleCreateChecklist = (e: React.FormEvent) => {
+  const handleCreateChecklist = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newChkTitle.trim()) return;
 
-    setChecklists([
-      {
-        id: "chk-" + Date.now(),
-        title: newChkTitle,
-        category: newChkCat,
-        badgeClass: "bg-primary-fixed text-on-primary-fixed-variant",
-        pinned: false,
-        items: [
-          { id: "init-1", text: "First action item", completed: false },
-          { id: "init-2", text: "Second action item", completed: false },
-        ],
-      },
-      ...checklists,
-    ]);
-
-    setNewChkTitle("");
+    setIsGenerating(true);
+    try {
+      const generated = await api.generateChecklist(newChkTitle);
+      setChecklists([
+        {
+          id: "chk-" + Date.now(),
+          title: generated.title,
+          category: generated.category || newChkCat,
+          badgeClass: "bg-primary-fixed text-on-primary-fixed-variant",
+          pinned: false,
+          items: generated.items,
+        },
+        ...checklists,
+      ]);
+      setNewChkTitle("");
+    } catch (err) {
+      console.error("AI list generation failed:", err);
+      setChecklists([
+        {
+          id: "chk-" + Date.now(),
+          title: newChkTitle,
+          category: newChkCat,
+          badgeClass: "bg-primary-fixed text-on-primary-fixed-variant",
+          pinned: false,
+          items: [
+            { id: "init-1", text: "First action item", completed: false },
+            { id: "init-2", text: "Second action item", completed: false },
+          ],
+        },
+        ...checklists,
+      ]);
+      setNewChkTitle("");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const toggleChecklistItem = (chkId: string, itemId: string) => {
@@ -118,21 +98,49 @@ export function AivoraList() {
     setNewChkItemText({ ...newChkItemText, [chkId]: "" });
   };
 
-  const handleAiBreakdown = (chkId: string) => {
-    setChecklists(
-      checklists.map((chk) =>
-        chk.id === chkId
-          ? {
-              ...chk,
-              items: [
-                ...chk.items,
-                { id: "ai-1-" + Date.now(), text: "AI Suggestion: Verify backup cloud storage", completed: false },
-                { id: "ai-2-" + Date.now(), text: "AI Suggestion: Set calendar notification reminder", completed: false },
-              ],
-            }
-          : chk
-      )
-    );
+  const [isBreakingDown, setIsBreakingDown] = useState<string | null>(null);
+
+  const handleAiBreakdown = async (chkId: string) => {
+    const chk = checklists.find(c => c.id === chkId);
+    if (!chk) return;
+    
+    setIsBreakingDown(chkId);
+    try {
+      const prompt = `Give me 3 sub-tasks or action items for a checklist titled "${chk.title}" in category "${chk.category}".`;
+      const generated = await api.generateChecklist(prompt);
+      
+      setChecklists(
+        checklists.map((c) =>
+          c.id === chkId
+            ? {
+                ...c,
+                items: [
+                  ...c.items,
+                  ...generated.items,
+                ],
+              }
+            : c
+        )
+      );
+    } catch (err) {
+      console.error("AI breakdown failed", err);
+      setChecklists(
+        checklists.map((c) =>
+          c.id === chkId
+            ? {
+                ...c,
+                items: [
+                  ...c.items,
+                  { id: "ai-1-" + Date.now(), text: "AI Suggestion: Verify backup cloud storage", completed: false },
+                  { id: "ai-2-" + Date.now(), text: "AI Suggestion: Set calendar notification reminder", completed: false },
+                ],
+              }
+            : c
+        )
+      );
+    } finally {
+      setIsBreakingDown(null);
+    }
   };
 
   return (
@@ -171,10 +179,15 @@ export function AivoraList() {
             </select>
             <button
               type="submit"
-              className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-transform whitespace-nowrap flex items-center justify-center gap-2"
+              disabled={isGenerating}
+              className="px-8 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-transform whitespace-nowrap flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <span className="material-symbols-outlined text-lg">add_task</span>
-              <span>Create List</span>
+              {isGenerating ? (
+                <span className="material-symbols-outlined text-lg animate-spin">refresh</span>
+              ) : (
+                <span className="material-symbols-outlined text-lg">auto_awesome</span>
+              )}
+              <span>{isGenerating ? "Generating..." : "AI Generate"}</span>
             </button>
           </form>
         </div>
@@ -210,10 +223,15 @@ export function AivoraList() {
                     </div>
                     <button
                       onClick={() => handleAiBreakdown(chk.id)}
-                      className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold hover:scale-105 transition-transform flex items-center gap-1 shadow-sm"
+                      disabled={isBreakingDown === chk.id}
+                      className="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold hover:scale-105 transition-transform flex items-center gap-1 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
                       title="AI will generate actionable sub-tasks"
                     >
-                      <span className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                      {isBreakingDown === chk.id ? (
+                        <span className="material-symbols-outlined text-xs animate-spin">refresh</span>
+                      ) : (
+                        <span className="material-symbols-outlined text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
+                      )}
                       <span>AI Breakdown</span>
                     </button>
                   </div>

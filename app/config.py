@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     """System settings loaded from environment variables or .env file."""
 
     database_url: str = Field(
-        default="sqlite+aiosqlite:///./aivora.db",
+        default="postgresql+asyncpg://postgres:postgres@127.0.0.1:54322/postgres",
         description="SQLAlchemy database connection URL",
     )
     jwt_secret_key: str = Field(
@@ -22,10 +22,6 @@ class Settings(BaseSettings):
     gemini_api_key: str = Field(
         default="mock-gemini-api-key-for-local-dev",
         description="Google Gemini API key for ADK agents",
-    )
-    openai_api_key: str = Field(
-        default="",
-        description="OpenAI API key for chat assistant",
     )
     port: int = Field(default=8000, description="Port number for FastAPI server")
     CORS_ORIGINS: list[str] = Field(

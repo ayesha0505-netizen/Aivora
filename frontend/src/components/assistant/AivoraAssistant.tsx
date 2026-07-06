@@ -1,11 +1,22 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { SideNavBar, Conversation } from "./SideNavBar";
-import { ChatHeader } from "./ChatHeader";
 import { ChatMessageList, Message as UIMessage } from "./ChatMessageList";
 import { ChatInputArea } from "./ChatInputArea";
 import { api, Session, Message as ApiMessage } from "@/lib/api";
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  time: string;
+}
 
 function mapApiToUiMessage(apiMsg: ApiMessage): UIMessage {
   const timeStr = new Date(apiMsg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -33,11 +44,8 @@ function formatRelativeTime(dateString: string): string {
 }
 
 export function AivoraAssistant() {
-  const [activeTab, setActiveTab] = useState("assistant");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string>("");
@@ -54,7 +62,15 @@ export function AivoraAssistant() {
         time: formatRelativeTime(s.updated_at),
       }));
       setConversations(mappedConvs);
-      if (mappedConvs.length > 0 && !activeConversationId) {
+      
+      const isNewReq = typeof window !== 'undefined' && window.location.search.includes('new=true');
+      
+      if (isNewReq) {
+        setActiveConversationId("");
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({}, '', '/assistant');
+        }
+      } else if (mappedConvs.length > 0 && !activeConversationId) {
         setActiveConversationId(mappedConvs[0].id);
       }
     } catch (error) {
@@ -65,6 +81,10 @@ export function AivoraAssistant() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     fetchSessions().catch(console.error);
+
+    const handleNewChat = () => setActiveConversationId("");
+    window.addEventListener("new-chat", handleNewChat);
+    return () => window.removeEventListener("new-chat", handleNewChat);
   }, []);
 
   useEffect(() => {
@@ -84,7 +104,6 @@ export function AivoraAssistant() {
   }, [activeConversationId, messagesMap]);
 
   const activeMessages = messagesMap[activeConversationId] || [];
-  const activeConversation = conversations.find((c) => c.id === activeConversationId);
   const isNewChat = activeMessages.length === 0 && !isTyping;
 
   const scrollToBottom = () => {
@@ -97,52 +116,29 @@ export function AivoraAssistant() {
     }
   }, [activeMessages.length, isTyping, activeConversationId, isNewChat]);
 
-  const handleNewEntry = async () => {
-    setIsTyping(true);
-    try {
-      const newSession = await api.createSession("New Conversation");
-      const newConv: Conversation = {
-        id: newSession.id,
-        title: newSession.title,
-        time: "Just now",
-      };
-      setConversations([newConv, ...conversations]);
-      
-      const initMsgs = await api.getMessages(newSession.id);
-      setMessagesMap((prev) => ({ ...prev, [newSession.id]: initMsgs.map(mapApiToUiMessage) }));
-      
-      setActiveConversationId(newSession.id);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsTyping(false);
-    }
-  };
 
-  const handleDeleteChat = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await api.deleteSession(id);
-      const updated = conversations.filter((c) => c.id !== id);
-      setConversations(updated);
-      const nextMap = { ...messagesMap };
-      delete nextMap[id];
-      setMessagesMap(nextMap);
-      
-      if (activeConversationId === id) {
-        if (updated.length > 0) {
-          setActiveConversationId(updated[0].id);
-        } else {
-          handleNewEntry();
-        }
-      }
-    } catch (err) {
-      console.error("Failed to delete session", err);
-    }
-  };
 
   const handleSendMessage = async (text: string) => {
-    if (!activeConversationId) return;
+    let currentConversationId = activeConversationId;
+    
+    if (!currentConversationId) {
+      setIsTyping(true);
+      try {
+        const newSession = await api.createSession("New Conversation");
+        const newConv: Conversation = {
+          id: newSession.id,
+          title: newSession.title,
+          time: "Just now",
+        };
+        setConversations(prev => [newConv, ...prev]);
+        currentConversationId = newSession.id;
+        setActiveConversationId(currentConversationId);
+      } catch (err) {
+        console.error(err);
+        setIsTyping(false);
+        return;
+      }
+    }
     
     // Optimistic UI update
     const tempUserMsg: UIMessage = {
@@ -154,14 +150,14 @@ export function AivoraAssistant() {
     
     setMessagesMap((prev) => ({
       ...prev,
-      [activeConversationId]: [...(prev[activeConversationId] || []), tempUserMsg],
+      [currentConversationId]: [...(prev[currentConversationId] || []), tempUserMsg],
     }));
     
     setIsTyping(true);
     try {
-      const updatedApiMsgs = await api.sendMessage(activeConversationId, text);
+      const updatedApiMsgs = await api.sendMessage(currentConversationId, text);
       const uiMsgs = updatedApiMsgs.map(mapApiToUiMessage);
-      setMessagesMap((prev) => ({ ...prev, [activeConversationId]: uiMsgs }));
+      setMessagesMap((prev) => ({ ...prev, [currentConversationId]: uiMsgs }));
       
       // Update session title locally if needed (by re-fetching sessions)
       fetchSessions();
@@ -207,44 +203,61 @@ export function AivoraAssistant() {
     }
   };
 
+  const recognitionRef = useRef<any>(null);
+
   const handleToggleVoice = () => {
-    if (!isListening) {
+    if (typeof window === "undefined") return;
+    
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Voice recognition is not supported in this browser. Please try Chrome or Safari.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
       setIsListening(true);
-      setTimeout(() => {
-        setIsListening(false);
-        handleSendMessage("Can you review my appointments for tomorrow and highlight any conflicts?");
-      }, 3500);
-    } else {
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      if (transcript) {
+        handleSendMessage(transcript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error("Failed to start speech recognition", e);
       setIsListening(false);
     }
   };
 
   return (
-    <div className="bg-background text-on-background min-h-screen flex overflow-hidden">
-      <SideNavBar
-        activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab)}
-        isOpenMobile={mobileNavOpen}
-        onCloseMobile={() => setMobileNavOpen(false)}
-        onNewEntry={handleNewEntry}
-        conversations={conversations}
-        activeConversationId={activeConversationId}
-        onSelectConversation={(id) => setActiveConversationId(id)}
-        onDeleteConversation={handleDeleteChat}
-        isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-      />
-
-      <main className={`flex-1 flex flex-col relative h-screen bg-surface-container-lowest/50 transition-all duration-300 overflow-hidden ${
-        isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
-      }`}>
-        <ChatHeader
-          title={activeConversation?.title || "AI Assistant"}
-          status="Optimized"
-          onOpenMobileNav={() => setMobileNavOpen(true)}
-          isSidebarOpen={isSidebarOpen}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
+    <div className="flex-1 flex flex-col h-[calc(100vh-80px)] bg-surface-container-lowest/50 relative overflow-hidden">
 
         {isNewChat ? (
           <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto custom-scrollbar">
@@ -287,7 +300,6 @@ export function AivoraAssistant() {
             />
           </>
         )}
-      </main>
     </div>
   );
 }

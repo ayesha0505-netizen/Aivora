@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -22,7 +23,7 @@ interface ReminderItem {
 
 export function AivoraReminders() {
   const [activeFilter, setActiveFilter] = useState<string>("All Tasks");
-  const [showAiCard, setShowAiCard] = useState<boolean>(true);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [toast, setToast] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -40,64 +41,49 @@ export function AivoraReminders() {
 
   const [items, setItems] = useState<ReminderItem[]>([
     {
-      id: "toggle1",
-      title: "Review quarterly performance metrics with AI team",
+      id: "ai-1",
+      title: "Review Aivora Q3 Product Roadmap",
       category: "High Priority",
       categoryBadgeClass: "bg-primary-fixed text-on-primary-fixed-variant",
       borderColorClass: "border-primary",
       shadowClass: "pink-shadow",
-      timeText: "Due Today, 4:00 PM",
+      timeText: "Due Today, 5:00 PM",
       timeIcon: "calendar_month",
       completed: false,
       priority: "high",
-      footerIcon: "repeat",
+      footerIcon: "flag",
       footerIconClass: "text-primary",
-      filledNotification: false,
-    },
-    {
-      id: "toggle2",
-      title: "Plan weekly groceries and meal prep",
-      category: "Weekly",
-      categoryBadgeClass: "bg-secondary-container text-on-secondary-container",
-      borderColorClass: "border-secondary",
-      shadowClass: "purple-shadow",
-      timeText: "Every Sunday",
-      timeIcon: "calendar_month",
-      completed: false,
-      priority: "personal",
-      avatarText: "ME",
       filledNotification: true,
     },
     {
-      id: "toggle3",
-      title: "Call Mom for her birthday surprise",
-      category: "Social",
+      id: "ai-2",
+      title: "Evening Yoga Session",
+      category: "Health",
       categoryBadgeClass: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
       borderColorClass: "border-tertiary",
       shadowClass: "blue-shadow",
-      timeText: "Tomorrow, 10:00 AM",
-      timeIcon: "calendar_month",
-      completed: false,
-      priority: "personal",
-      footerIcon: "celebration",
-      footerIconClass: "text-tertiary",
-      filledNotification: false,
-    },
-    {
-      id: "toggle5",
-      title: "Afternoon yoga session",
-      category: "Health",
-      categoryBadgeClass: "bg-secondary-container text-on-secondary-container",
-      borderColorClass: "border-secondary",
-      shadowClass: "purple-shadow",
-      timeText: "Repeats Daily",
+      timeText: "Every Mon, Wed, Fri",
       timeIcon: "history",
       completed: false,
       priority: "personal",
       footerIcon: "self_improvement",
-      footerIconClass: "text-secondary",
-      filledNotification: true,
+      footerIconClass: "text-tertiary",
+      filledNotification: false,
     },
+    {
+      id: "ai-3",
+      title: "Grocery Shopping",
+      category: "Personal",
+      categoryBadgeClass: "bg-secondary-container text-on-secondary-container",
+      borderColorClass: "border-secondary",
+      shadowClass: "purple-shadow",
+      timeText: "Saturday, 2:00 PM",
+      timeIcon: "calendar_month",
+      completed: true,
+      priority: "personal",
+      avatarText: "ME",
+      filledNotification: false,
+    }
   ]);
 
   const showToast = (msg: string) => {

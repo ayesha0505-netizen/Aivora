@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from 'react';
@@ -19,6 +20,7 @@ export function SideNavBar() {
   const [listOpen, setListOpen] = useState(true);
   const { isSidebarOpen, toggleSidebar } = useSidebar();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleNewEntry = () => {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("open-new-entry-modal"));
@@ -43,8 +45,8 @@ export function SideNavBar() {
   ];
 
   return (
-    <aside className={`fixed left-0 top-0 h-full z-40 transition-all duration-300 ${isSidebarOpen ? "w-64 opacity-100" : "w-0 opacity-0 overflow-hidden pointer-events-none border-none"} hidden md:flex flex-col p-4 bg-surface-container-low shadow-lg shadow-primary/5 border-r border-outline-variant/20`}>
-      <div className="w-64 h-full shrink-0 flex flex-col">
+    <aside className={`fixed left-0 top-0 h-full z-40 transition-all duration-300 ${isSidebarOpen ? "w-72 opacity-100" : "w-0 opacity-0 overflow-hidden pointer-events-none border-none"} hidden md:flex flex-col p-4 bg-surface-container-low shadow-lg shadow-primary/5 border-r border-outline-variant/20`}>
+      <div className="w-full h-full shrink-0 flex flex-col">
         <div className="flex items-center justify-between mb-6 px-2 shrink-0">
           <div className="flex items-center gap-3 group cursor-pointer">
             <img src="/logo-icon.png" alt="Aivora Logo" className="w-[55px] h-[55px] object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 shrink-0" />
@@ -59,6 +61,24 @@ export function SideNavBar() {
             title="Close sidebar"
           >
             <span className="material-symbols-outlined text-[20px]">left_panel_close</span>
+          </button>
+        </div>
+
+        <div className="px-2 mb-4 shrink-0">
+          <button 
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                if (window.location.pathname === '/assistant') {
+                  window.dispatchEvent(new CustomEvent('new-chat'));
+                } else {
+                  window.location.href = '/assistant?new=true';
+                }
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 px-4 rounded-xl hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 font-bold"
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            New Chat
           </button>
         </div>
 

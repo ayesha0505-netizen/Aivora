@@ -20,7 +20,38 @@ export interface Message {
     score: string;
   };
   actions?: MessageAction[];
+  progress_steps?: string[];
 }
+
+const ProgressStepper = ({ steps }: { steps: string[] }) => {
+  return (
+    <div className="flex flex-col gap-3 mb-5 p-4 rounded-xl border border-outline-variant/20 bg-surface-container-lowest/50">
+      {steps.map((step, index) => {
+        const isFirst = index === 0;
+        const isLast = index === steps.length - 1;
+        
+        return (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.7, duration: 0.3 }}
+            className="flex items-center gap-3"
+          >
+            <div className={`flex items-center justify-center w-6 h-6 rounded-full ${isFirst ? 'bg-primary/20 text-primary' : isLast ? 'bg-green-500/20 text-green-600' : 'bg-surface-variant text-on-surface-variant'}`}>
+              <span className={`material-symbols-outlined text-[14px] ${isFirst ? 'animate-spin-slow' : ''}`}>
+                {isFirst ? 'sync' : isLast ? 'check' : 'done'}
+              </span>
+            </div>
+            <span className={`text-sm ${isFirst ? 'text-primary font-bold' : 'text-on-surface-variant'}`}>
+              {step}
+            </span>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
 
 interface ChatMessageListProps {
   messages: Message[];
@@ -167,9 +198,18 @@ export function ChatMessageList({
                   </div>
                   <div>
                     <div className="bg-surface-container-high p-5 rounded-2xl rounded-tl-sm border border-outline-variant/20 shadow-sm prose prose-pink max-w-none">
-                      <p className="text-on-surface leading-relaxed whitespace-pre-wrap">
-                        {renderFormattedText(message.text)}
-                      </p>
+                      {message.progress_steps && message.progress_steps.length > 0 && (
+                        <ProgressStepper steps={message.progress_steps} />
+                      )}
+                      
+                      <motion.div
+                        initial={message.progress_steps ? { opacity: 0 } : { opacity: 1 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: message.progress_steps ? message.progress_steps.length * 0.7 + 0.5 : 0, duration: 0.5 }}
+                      >
+                        <p className="text-on-surface leading-relaxed whitespace-pre-wrap">
+                          {renderFormattedText(message.text)}
+                        </p>
 
                       {/* Stats Grid Widget */}
                       {message.stats && (
@@ -221,6 +261,7 @@ export function ChatMessageList({
                           ))}
                         </div>
                       )}
+                      </motion.div>
                     </div>
 
                     {/* Footer / Reaction Icons */}

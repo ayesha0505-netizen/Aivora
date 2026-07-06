@@ -367,5 +367,41 @@ class DashboardService:
 
         await db.commit()
 
+    async def generate_checklist(self, prompt: str) -> dict:
+        from app.config import settings
+        import google.generativeai as genai
+        import json
+        
+        if not settings.gemini_api_key or settings.gemini_api_key == "mock-gemini-api-key-for-local-dev":
+            return {"title": prompt, "category": "General Task", "items": [{"id": "ai-1", "text": "Set up Gemini key to get AI lists", "completed": False}]}
+        
+        try:
+            genai.configure(api_key=settings.gemini_api_key)
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            system_prompt = (
+                "You are an AI assistant that generates structured checklists. "
+                "Given a user prompt, generate a relevant checklist with a title, "
+                "a category (choose from: General Task, Travel Prep, Work & Tech, Chore List), "
+                "and a list of actionable items (strings). "
+                "Output ONLY valid JSON with keys: 'title', 'category', 'items'."
+            )
+            response = await model.generate_content_async(
+                f"{system_prompt}\n\nUser prompt: {prompt}",
+                generation_config=genai.types.GenerationConfig(
+                    response_mime_type="application/json"
+                )
+            )
+            
+            content = response.text
+            data = json.loads(content)
+            return {
+                "title": data.get("title", prompt),
+                "category": data.get("category", "General Task"),
+                "items": [{"id": f"ai-{i}-{int(datetime.now(timezone.utc).timestamp())}", "text": text, "completed": False} for i, text in enumerate(data.get("items", []))]
+            }
+        except Exception as e:
+            print(f"Gemini error: {e}")
+            return {"title": prompt, "category": "General Task", "items": [{"id": "ai-error", "text": "Failed to generate AI list.", "completed": False}]}
+
 
 dashboard_service = DashboardService()

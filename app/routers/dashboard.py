@@ -18,6 +18,8 @@ from app.schemas.dashboard import (
     ReminderSchema,
     ShoppingItemCreate,
     ShoppingItemSchema,
+    ChecklistGenerateRequest,
+    ChecklistGenerateResponse,
 )
 from app.services.dashboard_service import dashboard_service
 
@@ -160,3 +162,15 @@ async def complete_reminder(
     if not rem:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reminder not found")
     return ReminderSchema.model_validate(rem)
+
+
+@router.post("/checklists/generate", response_model=ChecklistGenerateResponse)
+async def generate_checklist(
+    request: ChecklistGenerateRequest,
+    db: DbSession,
+    current_user: CurrentUser,
+):
+    """Generate a checklist using AI based on a natural language prompt."""
+    res = await dashboard_service.generate_checklist(request.prompt)
+    return ChecklistGenerateResponse(**res)
+

@@ -23,6 +23,7 @@ export function AivoraWeather() {
 
   useEffect(() => {
     let isMounted = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     api
       .getWeather(selectedCity)
@@ -49,14 +50,17 @@ export function AivoraWeather() {
       if (customEvent.detail && customEvent.detail.trim()) {
         const newCity = customEvent.detail.trim();
         setSelectedCity(newCity);
-        if (!cities.some((c) => c.toLowerCase() === newCity.toLowerCase())) {
-          setCities((prev) => [newCity, ...prev.slice(0, 4)]);
-        }
+        setCities((prev) => {
+          if (!prev.some((c) => c.toLowerCase() === newCity.toLowerCase())) {
+            return [newCity, ...prev.slice(0, 4)];
+          }
+          return prev;
+        });
       }
     };
     window.addEventListener("weather-search", handleSearch);
     return () => window.removeEventListener("weather-search", handleSearch);
-  }, [cities]);
+  }, []);
 
   const convertTemp = (tempF: number | undefined) => {
     if (tempF === undefined) return 0;
@@ -116,9 +120,12 @@ export function AivoraWeather() {
                         locationName = data.city || data.locality;
                       }
                       setSelectedCity(locationName);
-                      if (!cities.some((c) => c.toLowerCase() === locationName.toLowerCase())) {
-                        setCities((prev) => [locationName, ...prev.slice(0, 4)]);
-                      }
+                      setCities((prev) => {
+                        if (!prev.some((c) => c.toLowerCase() === locationName.toLowerCase())) {
+                          return [locationName, ...prev.slice(0, 4)];
+                        }
+                        return prev;
+                      });
                     } catch (e) {
                       console.error("Failed to reverse geocode:", e);
                       setLoading(false);

@@ -74,7 +74,7 @@ export function TopNavBar() {
         >
           notifications
         </button>
-        
+
         {mounted && isAuthenticated ? (
           <div className="flex items-center gap-2">
 

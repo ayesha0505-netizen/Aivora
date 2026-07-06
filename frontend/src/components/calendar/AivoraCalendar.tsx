@@ -19,128 +19,7 @@ interface CalendarEvent {
   extraAttendeesCount?: number;
 }
 
-const getInitialEvents = (): CalendarEvent[] => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const today = now.getDate();
 
-  return [
-    {
-      id: 'ev-1',
-      title: 'Morning Yoga',
-      time: '08:00 AM - 09:00 AM',
-      date: Math.max(1, today - 2),
-      month,
-      year,
-      category: 'Health & Wellness',
-      color: 'primary',
-      location: 'Zen Studio / Online',
-      description: 'Refresh body and mind with our morning vinyasa flow. Focus on breathing and core flexibility before starting the workday.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCwW-IYeYvHVWdivKlZJN9sYcM8ehhRSqbAPzLCoUkAhKuLLIeySQcZE3h2aG5cTAsjOEmWmONiu3g0W7kY0nOOsQmESgkmjxl7u8KIddeTzwf-pMi55m6EGRVEB7mK4l0FGMfeyfROZ9OxSjPq-uMbBO1u4gANdkdzptJSjsPwuEVqRTZTFtEvDCJ-PMpB4EFZcs_CJh3ikAGWeMGfsXV5JyWsEYYgFZmeBGJ9bu5ilsM_TOKUJelS1A',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAftIaPQFvHEuGlrserLYFVAeXp9YTjrGHpxYCSmGm4r0tRgSjBq2v3K2UI-YeFOKDz_6dlmAXx1y1qsPLGDRiwUbqTiU8qzBHx-GDjYLfG2A-olVcpLSQ7r7iV7PS_UBRjGWtvQfOz1zvKgPxTeyUcZ0yZJbdSIhaxNcEaPmjb3pKhsni4JZNkLmvoRD2PJ0G0sB1sio-GrCGX_VmLRbVPcfqdb3rUzKfBfMM9L1MdX7RvzbzlHLp4Zw'
-      ],
-      extraAttendeesCount: 2
-    },
-    {
-      id: 'ev-2',
-      title: 'Product Sync',
-      time: '10:00 AM - 11:30 AM',
-      date: Math.max(1, today - 1),
-      month,
-      year,
-      category: 'Work',
-      color: 'secondary',
-      location: 'Conference Room B',
-      description: 'Final review of the Aivora interface design. We will be going over the calendar view, micro-interactions, and the new color-coding system for tasks and events.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCwW-IYeYvHVWdivKlZJN9sYcM8ehhRSqbAPzLCoUkAhKuLLIeySQcZE3h2aG5cTAsjOEmWmONiu3g0W7kY0nOOsQmESgkmjxl7u8KIddeTzwf-pMi55m6EGRVEB7mK4l0FGMfeyfROZ9OxSjPq-uMbBO1u4gANdkdzptJSjsPwuEVqRTZTFtEvDCJ-PMpB4EFZcs_CJh3ikAGWeMGfsXV5JyWsEYYgFZmeBGJ9bu5ilsM_TOKUJelS1A',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAftIaPQFvHEuGlrserLYFVAeXp9YTjrGHpxYCSmGm4r0tRgSjBq2v3K2UI-YeFOKDz_6dlmAXx1y1qsPLGDRiwUbqTiU8qzBHx-GDjYLfG2A-olVcpLSQ7r7iV7PS_UBRjGWtvQfOz1zvKgPxTeyUcZ0yZJbdSIhaxNcEaPmjb3pKhsni4JZNkLmvoRD2PJ0G0sB1sio-GrCGX_VmLRbVPcfqdb3rUzKfBfMM9L1MdX7RvzbzlHLp4Zw',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBnCC0qKPVY6hocic6ZH77QejCUObcCJ2IMofZXERV8wOwxI_wj-N2BEV0nw3Dy7s2-IdQSMle5VWRo-S8HMjs08Wcva1RIn8SQcIrt1TO1LInxDMvz1I2ZrsbmATMZS8zzCGrr_z0NgEapQVQDPp3Mxxiq9ZAYtxnSMGBTz0WNq7dQ7UpJA_I0a87F26iZOtvQkSZ_bJ-5_VVeZZQ0BEL99tNO9xLe1QpPHdE7pX3o8oXi59j1TuQuww'
-      ],
-      extraAttendeesCount: 5
-    },
-    {
-      id: 'ev-3',
-      title: 'Client Call',
-      time: '02:00 PM - 03:00 PM',
-      date: today,
-      month,
-      year,
-      category: 'Client Relations',
-      color: 'tertiary',
-      location: 'Google Meet',
-      description: 'Quarterly check-in with Enterprise Partners to showcase the Your everyday ai companion AI Assistant features and automated scheduling capabilities.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBnCC0qKPVY6hocic6ZH77QejCUObcCJ2IMofZXERV8wOwxI_wj-N2BEV0nw3Dy7s2-IdQSMle5VWRo-S8HMjs08Wcva1RIn8SQcIrt1TO1LInxDMvz1I2ZrsbmATMZS8zzCGrr_z0NgEapQVQDPp3Mxxiq9ZAYtxnSMGBTz0WNq7dQ7UpJA_I0a87F26iZOtvQkSZ_bJ-5_VVeZZQ0BEL99tNO9xLe1QpPHdE7pX3o8oXi59j1TuQuww'
-      ],
-      extraAttendeesCount: 1
-    },
-    {
-      id: 'ev-4',
-      title: 'Aivora Launch Day! 🚀',
-      time: 'All Day Event',
-      date: today,
-      month,
-      year,
-      category: 'Milestone',
-      color: 'primary',
-      location: 'HQ / Global Live Stream',
-      description: 'Official public release of Aivora! Watch party at HQ, media outreach, and live community Q&A session with the engineering team.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCwW-IYeYvHVWdivKlZJN9sYcM8ehhRSqbAPzLCoUkAhKuLLIeySQcZE3h2aG5cTAsjOEmWmONiu3g0W7kY0nOOsQmESgkmjxl7u8KIddeTzwf-pMi55m6EGRVEB7mK4l0FGMfeyfROZ9OxSjPq-uMbBO1u4gANdkdzptJSjsPwuEVqRTZTFtEvDCJ-PMpB4EFZcs_CJh3ikAGWeMGfsXV5JyWsEYYgFZmeBGJ9bu5ilsM_TOKUJelS1A',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAftIaPQFvHEuGlrserLYFVAeXp9YTjrGHpxYCSmGm4r0tRgSjBq2v3K2UI-YeFOKDz_6dlmAXx1y1qsPLGDRiwUbqTiU8qzBHx-GDjYLfG2A-olVcpLSQ7r7iV7PS_UBRjGWtvQfOz1zvKgPxTeyUcZ0yZJbdSIhaxNcEaPmjb3pKhsni4JZNkLmvoRD2PJ0G0sB1sio-GrCGX_VmLRbVPcfqdb3rUzKfBfMM9L1MdX7RvzbzlHLp4Zw',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBnCC0qKPVY6hocic6ZH77QejCUObcCJ2IMofZXERV8wOwxI_wj-N2BEV0nw3Dy7s2-IdQSMle5VWRo-S8HMjs08Wcva1RIn8SQcIrt1TO1LInxDMvz1I2ZrsbmATMZS8zzCGrr_z0NgEapQVQDPp3Mxxiq9ZAYtxnSMGBTz0WNq7dQ7UpJA_I0a87F26iZOtvQkSZ_bJ-5_VVeZZQ0BEL99tNO9xLe1QpPHdE7pX3o8oXi59j1TuQuww'
-      ],
-      extraAttendeesCount: 12
-    },
-    {
-      id: 'ev-5',
-      title: 'Design Workshop',
-      time: '11:30 AM - 01:00 PM',
-      date: Math.min(28, today + 3),
-      month,
-      year,
-      category: 'Design',
-      color: 'secondary',
-      location: 'Design Studio 4',
-      description: 'Brainstorming session on next-generation UI components, glassmorphism enhancements, and dark mode color harmonies for mobile.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAftIaPQFvHEuGlrserLYFVAeXp9YTjrGHpxYCSmGm4r0tRgSjBq2v3K2UI-YeFOKDz_6dlmAXx1y1qsPLGDRiwUbqTiU8qzBHx-GDjYLfG2A-olVcpLSQ7r7iV7PS_UBRjGWtvQfOz1zvKgPxTeyUcZ0yZJbdSIhaxNcEaPmjb3pKhsni4JZNkLmvoRD2PJ0G0sB1sio-GrCGX_VmLRbVPcfqdb3rUzKfBfMM9L1MdX7RvzbzlHLp4Zw'
-      ],
-      extraAttendeesCount: 3
-    },
-    {
-      id: 'ev-6',
-      title: 'Interview',
-      time: '01:00 PM - 02:00 PM',
-      date: Math.min(28, today + 5),
-      month,
-      year,
-      category: 'Recruiting',
-      color: 'tertiary',
-      location: 'Room 204',
-      description: 'Technical interview with Senior Frontend Developer candidate. Focus on React, Next.js architecture, and modern state management.',
-      attendees: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCwW-IYeYvHVWdivKlZJN9sYcM8ehhRSqbAPzLCoUkAhKuLLIeySQcZE3h2aG5cTAsjOEmWmONiu3g0W7kY0nOOsQmESgkmjxl7u8KIddeTzwf-pMi55m6EGRVEB7mK4l0FGMfeyfROZ9OxSjPq-uMbBO1u4gANdkdzptJSjsPwuEVqRTZTFtEvDCJ-PMpB4EFZcs_CJh3ikAGWeMGfsXV5JyWsEYYgFZmeBGJ9bu5ilsM_TOKUJelS1A'
-      ]
-    },
-    {
-      id: 'ev-7',
-      title: 'Gym Session',
-      time: '05:30 PM - 07:00 PM',
-      date: Math.min(28, today + 5),
-      month,
-      year,
-      category: 'Health & Wellness',
-      color: 'primary',
-      location: 'Fitness Club',
-      description: 'Evening workout routine: weight training and cardio interval session to destress.',
-      attendees: []
-    }
-  ];
-};
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -156,7 +35,7 @@ export function AivoraCalendar() {
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState<number>(now.getDate());
   
-  const [events, setEvents] = useState<CalendarEvent[]>(() => getInitialEvents());
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isNewEntryModalOpen, setIsNewEntryModalOpen] = useState<boolean>(false);
@@ -213,11 +92,7 @@ export function AivoraCalendar() {
               extraAttendeesCount: 0
             };
           });
-          setEvents(prev => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const newEvs = formatted.filter(f => !existingIds.has(f.id));
-            return [...prev, ...newEvs];
-          });
+          setEvents(formatted);
         }
       } catch (err) {
         console.warn("Could not fetch API calendar events:", err);

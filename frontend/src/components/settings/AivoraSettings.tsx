@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
+
 
 interface ConnectedAccount {
   id: string;
@@ -13,7 +13,7 @@ interface ConnectedAccount {
 }
 
 export function AivoraSettings() {
-  const { theme, setTheme } = useTheme();
+
 
   // AI Intelligence state
   const [proactiveAssistance, setProactiveAssistance] = useState(true);
@@ -60,7 +60,7 @@ export function AivoraSettings() {
   };
 
   const handleDiscard = () => {
-    setTheme("light");
+
     setProactiveAssistance(true);
     setCommunicationTone("Playful & Energetic");
     setRefreshFrequency("Real-time Sync");
@@ -70,10 +70,6 @@ export function AivoraSettings() {
     showToast("Changes discarded. Reset to defaults.", "info");
   };
 
-  const handleThemeChange = (mode: "light" | "dark") => {
-    setTheme(mode);
-    showToast(`Switched to ${mode === "light" ? "Light" : "Dark"} Mode`, "info");
-  };
 
   const toggleDisconnect = (id: string) => {
     setAccounts((prev) =>
@@ -143,57 +139,7 @@ export function AivoraSettings() {
 
       {/* Bento Grid Layout */}
       <div className="grid grid-cols-12 gap-6">
-        {/* Appearance Toggle Card */}
-        <section className="col-span-12 lg:col-span-5 bg-secondary-container/30 rounded-lg p-6 border border-secondary/10 flex flex-col justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-secondary mb-1 flex items-center gap-2">
-              <span className="material-symbols-outlined">palette</span> Appearance
-            </h3>
-            <p className="text-sm text-on-secondary-container/80 mb-6">Choose your visual aesthetic</p>
-          </div>
-          <div className="space-y-3">
-            <button
-              onClick={() => handleThemeChange("light")}
-              className={`w-full flex justify-between items-center p-4 rounded-xl bouncy-hover active-scale transition-all cursor-pointer ${
-                theme === "light"
-                  ? "bg-white dark:bg-surface-container border-2 border-primary shadow-sm"
-                  : "bg-surface-container-highest/50 opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`material-symbols-outlined ${theme === "light" ? "text-primary" : "text-on-surface-variant"}`}>
-                  light_mode
-                </span>
-                <span className="font-bold text-on-surface">Light Mode</span>
-              </div>
-              {theme === "light" && (
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  check_circle
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => handleThemeChange("dark")}
-              className={`w-full flex justify-between items-center p-4 rounded-xl bouncy-hover active-scale transition-all cursor-pointer ${
-                theme === "dark"
-                  ? "bg-white dark:bg-surface-container border-2 border-primary shadow-sm"
-                  : "bg-surface-container-highest/50 opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
-              }`}
-            >
-              <div className="flex items-center gap-3 text-on-surface-variant">
-                <span className={`material-symbols-outlined ${theme === "dark" ? "text-primary" : ""}`}>
-                  dark_mode
-                </span>
-                <span className="font-bold text-on-surface">Dark Mode</span>
-              </div>
-              {theme === "dark" && (
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  check_circle
-                </span>
-              )}
-            </button>
-          </div>
-        </section>
+
 
         {/* AI Preferences (Wide Card) */}
         <section className="col-span-12 lg:col-span-7 bg-white dark:bg-surface-container-low rounded-lg p-8 shadow-sm border border-outline-variant/20">

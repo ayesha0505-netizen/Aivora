@@ -94,6 +94,7 @@ function getConditionInfo(code: number, isDay: boolean = true): [string, string,
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: number): WeatherResponseSchema {
   const current = data.current || {};
   const hourlyData = data.hourly || {};
@@ -124,7 +125,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
     try {
       const dt = new Date(dailyData.sunset[0]);
       sunsetTime = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }
@@ -181,14 +182,14 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
       colorClass: "text-primary",
     });
   }
-  
+
   travelRecs.push({
     title: windSpeed < 15 ? "Commute Conditions: Ideal" : "Commute: Breezy & Windy",
     subtitle: windSpeed < 15 ? "Low wind and pleasant temps make for a perfect commute today." : `Watch for gusty winds up to ${windSpeed} mph.`,
     icon: "commute",
     colorClass: "text-secondary",
   });
-  
+
   travelRecs.push({
     title: `Sunset: ${sunsetTime}`,
     subtitle: "Golden hour will be particularly clear tonight for outdoor photography.",
@@ -200,7 +201,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
   const hTimes = hourlyData.time || [];
   const hTemps = hourlyData.temperature_2m || [];
   const hCodes = hourlyData.weather_code || [];
-  
+
   const nowMs = Date.now();
   let added = 0;
 
@@ -212,18 +213,18 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
         const tempVal = Math.round(hTemps[i] ?? currentTemp);
         const codeVal = hCodes[i] ?? wCode;
         const [cond, icon] = getConditionInfo(codeVal, true);
-        
+
         hourlyList.push({
           time: timeLabel,
           temp: tempVal,
           icon: icon,
           condition: cond,
         });
-        
+
         added++;
         if (added >= 7) break;
       }
-    } catch (e) {
+    } catch (_e) {
       continue;
     }
   }
@@ -245,7 +246,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
   const dPrecips = dailyData.precipitation_probability_max || [];
 
   const daysNames = ["Today", "Tomorrow", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  
+
   for (let i = 0; i < Math.min(7, dTimes.length); i++) {
     try {
       const dt = new Date(dTimes[i]);
@@ -256,7 +257,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
       const codeVal = dCodes[i] ?? 0;
       const precipVal = dPrecips[i] != null ? `${Math.round(dPrecips[i])}%` : "0%";
       const [cond, icon, badge, shadow] = getConditionInfo(codeVal, true);
-      
+
       forecastList.push({
         day: dayName,
         date: dateStr,
@@ -268,7 +269,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
         badgeClass: badge,
         shadowClass: shadow,
       });
-    } catch (e) {
+    } catch (_e) {
       continue;
     }
   }
@@ -317,7 +318,7 @@ function parseOpenMeteoResponse(city: string, data: any, lat: number, lon: numbe
 export async function fetchLiveWeatherDirect(city: string): Promise<WeatherResponseSchema> {
   const cleanCity = city.trim();
   const lowerCity = cleanCity.toLowerCase();
-  
+
   let lat = 37.7749;
   let lon = -122.4194;
   let formattedCity = "San Francisco, CA";
@@ -329,7 +330,7 @@ export async function fetchLiveWeatherDirect(city: string): Promise<WeatherRespo
     try {
       let geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanCity)}&count=1&language=en`);
       let data = geoRes.ok ? await geoRes.json() : {};
-      
+
       // If no results, try splitting by comma (e.g. "Kolkata, West Bengal" -> "Kolkata")
       if (!data.results || data.results.length === 0) {
         const shortCity = cleanCity.split(',')[0].trim();
@@ -353,7 +354,7 @@ export async function fetchLiveWeatherDirect(city: string): Promise<WeatherRespo
       } else {
         formattedCity = cleanCity;
       }
-    } catch (e) {
+    } catch (_e) {
       console.warn(`Geocoding failed for ${city}:`, e);
       formattedCity = cleanCity;
     }
@@ -361,12 +362,12 @@ export async function fetchLiveWeatherDirect(city: string): Promise<WeatherRespo
 
   // Fetch Open-Meteo weather
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,surface_pressure,visibility,is_day&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
-  
+
   const wRes = await fetch(weatherUrl);
   if (!wRes.ok) {
     throw new Error(`Open-Meteo API failed with status ${wRes.status}`);
   }
-  
+
   const data = await wRes.json();
   return parseOpenMeteoResponse(formattedCity, data, lat, lon);
 }

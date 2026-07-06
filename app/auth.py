@@ -33,8 +33,17 @@ def get_password_hash(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
+import firebase_admin.auth
+from app.firebase_config import initialize_firebase
+
+# Initialize Firebase on module load
+initialize_firebase()
+
 def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
-    """Create a JSON Web Token (JWT) with expiration."""
+    """Create a JSON Web Token (JWT) with expiration.
+    Note: In production, Firebase manages tokens on the client side.
+    This is kept for local testing/compatibility.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -46,12 +55,21 @@ def create_access_token(data: dict[str, Any], expires_delta: timedelta | None = 
 
 
 def decode_access_token(token: str) -> dict[str, Any] | None:
-    """Decode and validate a JWT access token."""
+    """Decode and validate a JWT access token using Firebase Admin, falling back to local JWT."""
     try:
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        return payload
-    except jwt.PyJWTError:
-        return None
+        # First try to verify as a Firebase ID token
+        decoded_token = firebase_admin.auth.verify_id_token(token)
+        # Firebase token contains 'uid', map it to 'sub' for compatibility
+        if 'uid' in decoded_token:
+            decoded_token['sub'] = decoded_token['uid']
+        return decoded_token
+    except Exception as firebase_err:
+        # Fallback to local custom JWT decoding
+        try:
+            payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+            return payload
+        except jwt.PyJWTError:
+            return None
 
 
 async def get_current_user(

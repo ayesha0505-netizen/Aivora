@@ -276,6 +276,231 @@ function CoverPattern({ type, icon }: { type: string; icon: string }) {
   );
 }
 
+const MOCK_NOTEBOOKS: NotebookDocument[] = [
+  {
+    id: "nb-1",
+    title: "AI & Machine Learning Concepts",
+    folder: "AI Research",
+    tags: ["#ai", "#learning", "#tech"],
+    coverTheme: "dark-starry",
+    lastEdited: "2 hours ago",
+    favorite: true,
+    sourcesCount: 15,
+    pages: [
+      {
+        id: "pg-1-1",
+        title: "Neural Networks Overview",
+        content: "# Neural Networks\n\nA basic overview of how artificial neural networks work...",
+        lastEdited: "2 hours ago",
+      },
+      {
+        id: "pg-1-2",
+        title: "Transformers Architecture",
+        content: "# Transformers\n\nAttention is all you need.",
+        lastEdited: "1 day ago",
+      }
+    ]
+  },
+  {
+    id: "nb-2",
+    title: "Trip to Japan 2026",
+    folder: "Travel Plans",
+    tags: ["#travel", "#japan", "#planning"],
+    coverTheme: "blue-waves",
+    lastEdited: "Yesterday",
+    favorite: true,
+    sourcesCount: 8,
+    pages: [
+      {
+        id: "pg-2-1",
+        title: "Kyoto Itinerary",
+        content: "# Kyoto Day 1\n\n- Visit Fushimi Inari\n- Walk through Gion",
+        lastEdited: "Yesterday",
+      }
+    ]
+  },
+  {
+    id: "nb-3",
+    title: "Product Design Ideas",
+    folder: "Personal Projects",
+    tags: ["#design", "#uiux", "#ideas"],
+    coverTheme: "peach-waves",
+    lastEdited: "3 days ago",
+    favorite: false,
+    sourcesCount: 4,
+    pages: [
+      {
+        id: "pg-3-1",
+        title: "App Wireframes",
+        content: "# Wireframes\n\nNeed to sketch out the new dashboard layout.",
+        lastEdited: "3 days ago",
+      }
+    ]
+  },
+  {
+    id: "nb-4",
+    title: "Q3 Strategy Meeting",
+    folder: "Meeting Minutes",
+    tags: ["#work", "#q3", "#strategy"],
+    coverTheme: "retro-confetti",
+    lastEdited: "Last week",
+    favorite: false,
+    sourcesCount: 2,
+    pages: [
+      {
+        id: "pg-4-1",
+        title: "Marketing Sync",
+        content: "# Marketing Sync\n\n- Discussed SEO strategy for Q3.",
+        lastEdited: "Last week",
+      }
+    ]
+  },
+  {
+    id: "nb-5",
+    title: "Advanced React Patterns",
+    folder: "Study Notes",
+    tags: ["#react", "#frontend", "#code"],
+    coverTheme: "botanical-vines",
+    lastEdited: "1 week ago",
+    favorite: true,
+    sourcesCount: 12,
+    pages: [
+      {
+        id: "pg-5-1",
+        title: "Custom Hooks",
+        content: "# Custom Hooks\n\nHow to extract stateful logic into reusable hooks.",
+        lastEdited: "1 week ago",
+      }
+    ]
+  },
+  {
+    id: "nb-6",
+    title: "Garden Planning",
+    folder: "Personal Projects",
+    tags: ["#garden", "#home", "#hobby"],
+    coverTheme: "floral-garden",
+    lastEdited: "2 weeks ago",
+    favorite: false,
+    sourcesCount: 5,
+    pages: [
+      {
+        id: "pg-6-1",
+        title: "Spring Planting",
+        content: "# Spring\n\nTomatoes, Basil, and Bell Peppers.",
+        lastEdited: "2 weeks ago",
+      }
+    ]
+  },
+  {
+    id: "nb-7",
+    title: "Winter Cabin Getaway",
+    folder: "Travel Plans",
+    tags: ["#travel", "#winter", "#cabin"],
+    coverTheme: "winter-snow",
+    lastEdited: "Last month",
+    favorite: false,
+    sourcesCount: 3,
+    pages: [
+      {
+        id: "pg-7-1",
+        title: "Packing List",
+        content: "# Packing List\n\n- Snow boots\n- Heavy coats\n- Hot chocolate mix",
+        lastEdited: "Last month",
+      }
+    ]
+  },
+  {
+    id: "nb-8",
+    title: "Tea Tasting Log",
+    folder: "Personal Projects",
+    tags: ["#tea", "#tasting", "#journal"],
+    coverTheme: "tea-time",
+    lastEdited: "2 months ago",
+    favorite: false,
+    sourcesCount: 1,
+    pages: [
+      {
+        id: "pg-8-1",
+        title: "Oolong Collection",
+        content: "# Oolong\n\nTasted Tieguanyin today. Very floral.",
+        lastEdited: "2 months ago",
+      }
+    ]
+  },
+  {
+    id: "nb-9",
+    title: "Bohemian Interior",
+    folder: "Personal Projects",
+    tags: ["#decor", "#interior", "#boho"],
+    coverTheme: "boho-flower",
+    lastEdited: "3 months ago",
+    favorite: true,
+    sourcesCount: 20,
+    pages: [
+      {
+        id: "pg-9-1",
+        title: "Living Room Moodboard",
+        content: "# Living Room\n\nMacrame wall hangings, lots of plants.",
+        lastEdited: "3 months ago",
+      }
+    ]
+  },
+  {
+    id: "nb-10",
+    title: "Quantum Computing Basics",
+    folder: "AI Research",
+    tags: ["#quantum", "#physics", "#future"],
+    coverTheme: "purple-dream",
+    lastEdited: "3 months ago",
+    favorite: false,
+    sourcesCount: 7,
+    pages: [
+      {
+        id: "pg-10-1",
+        title: "Qubits",
+        content: "# Qubits\n\nUnlike classical bits, qubits can exist in a superposition.",
+        lastEdited: "3 months ago",
+      }
+    ]
+  },
+  {
+    id: "nb-11",
+    title: "Autumn Recipes",
+    folder: "Personal Projects",
+    tags: ["#food", "#cooking", "#autumn"],
+    coverTheme: "autumn-burgundy",
+    lastEdited: "6 months ago",
+    favorite: false,
+    sourcesCount: 14,
+    pages: [
+      {
+        id: "pg-11-1",
+        title: "Pumpkin Soup",
+        content: "# Pumpkin Soup\n\nRoast the pumpkin first for better flavor.",
+        lastEdited: "6 months ago",
+      }
+    ]
+  },
+  {
+    id: "nb-12",
+    title: "Tropical Island Retreat",
+    folder: "Travel Plans",
+    tags: ["#travel", "#beach", "#summer"],
+    coverTheme: "tropical-leaves",
+    lastEdited: "1 year ago",
+    favorite: false,
+    sourcesCount: 6,
+    pages: [
+      {
+        id: "pg-12-1",
+        title: "Resort Options",
+        content: "# Resorts\n\nLooking at all-inclusive options in the Maldives.",
+        lastEdited: "1 year ago",
+      }
+    ]
+  }
+];
+
 export function AivoraNotes() {
   const [folders] = useState<string[]>([
     "All Notebooks",
@@ -296,271 +521,7 @@ export function AivoraNotes() {
   const [viewMode, setViewMode] = useState<"grid" | "full_notebook">("grid");
 
   // Initial 12 Rich Notebooks with diverse Digital Planner Cover Themes
-  const [notebooks, setNotebooks] = useState<NotebookDocument[]>([
-    {
-      id: "nb-1",
-      title: "Next-Gen Autonomous Agent Architectures",
-      folder: "AI Research",
-      tags: ["#LLM", "#agents", "#deepmind"],
-      coverTheme: "dark-starry",
-      lastEdited: "10 mins ago",
-      favorite: true,
-      sourcesCount: 13,
-      pages: [
-        {
-          id: "pg-1-1",
-          title: "Executive Summary & Core Pillars",
-          lastEdited: "10 mins ago",
-          content:
-            "# Next-Gen Autonomous Agent Architectures\n\n## 1. Executive Summary\nModern agentic workflows rely on iterative reflection and hierarchical task decomposition. By combining tool-use capabilities with structured memory banks, agents can solve long-horizon coding tasks without human intervention.\n\n### Key Architectural Pillars:\n- **Reactive Wakeup:** No polling loops required; event-driven system wakeups reduce latency.\n- **Subagent Orchestration:** Delegating deep research tasks to specialized read-only subagents preserves context window efficiency.\n- **Structured Tool Definitions:** Clean JSON schemas with strict argument checking.\n\n> *Note: Always prioritize using the most specific tool available for the task at hand.*",
-        },
-        {
-          id: "pg-1-2",
-          title: "Reactive Wakeup & Event-Driven Systems",
-          lastEdited: "1 hour ago",
-          content:
-            "# Reactive Wakeup Mechanics\n\nInstead of wasting tokens on polling loops (`while True: check_status()`), high-performance agents rely on reactive event triggers.\n\n```python\n# Event callback architecture\ndef on_subagent_complete(message):\n    context.append(message)\n    agent.resume_execution()\n```\n\nThis saves over 40% in compute latency during complex multi-step builds.",
-        },
-        {
-          id: "pg-1-3",
-          title: "Subagent Orchestration & Memory Banks",
-          lastEdited: "Yesterday",
-          content:
-            "# Subagent Delegation Strategies\n\nWhen exploring large codebases (>500k LOC), launching a specialized `researcher` subagent ensures that the primary planning agent's context window remains uncluttered.\n\n## Best Practices:\n1. Provide unambiguous prompt instructions.\n2. Request structured markdown summary artifacts.\n3. Avoid redundant concurrent subagent calls for overlapping domains.",
-        },
-      ],
-    },
-    {
-      id: "nb-2",
-      title: "Paris 2026 Itinerary & Restaurant Reservations",
-      folder: "Travel Plans",
-      tags: ["#travel", "#paris", "#vacation"],
-      coverTheme: "boho-flower",
-      lastEdited: "Yesterday",
-      favorite: true,
-      sourcesCount: 4,
-      pages: [
-        {
-          id: "pg-2-1",
-          title: "7-Day Master Itinerary",
-          lastEdited: "Yesterday",
-          content:
-            "# Paris 2026: 7-Day Master Itinerary\n\n## Day 1: Arrival & Le Marais\n- Morning: Arrive at CDG, check into boutique hotel near Place des Vosges.\n- Afternoon: Stroll through coffee shops (Carette, Ob-La-Di).\n- Evening: Welcome dinner at Le George.\n\n## Day 2: Louvre & Seine River Cruise\n- 9:30 AM: VIP skip-the-line entrance to Louvre Museum.\n- 3:00 PM: Tuileries Garden relaxation.\n- 7:30 PM: Sunset boat tour along the Seine.",
-        },
-        {
-          id: "pg-2-2",
-          title: "Restaurant & Cafe Bucket List",
-          lastEdited: "2 days ago",
-          content:
-            "# Must-Visit Dining & Bistros\n\n- **Septime:** Michelin-starred neo-bistro (reservation booked for Wed 8 PM).\n- **L'As du Fallafel:** Best street food in Le Marais.\n- **Du Pain et des Idées:** Pistachio escargot pastries every morning!\n- **Le Chateaubriand:** Tasting menu experience.",
-        },
-      ],
-    },
-    {
-      id: "nb-3",
-      title: "Q3 Product Engineering Weekly Sync",
-      folder: "Meeting Minutes",
-      tags: ["#work", "#sync", "#q3"],
-      coverTheme: "blue-waves",
-      lastEdited: "Jul 2",
-      favorite: false,
-      sourcesCount: 8,
-      pages: [
-        {
-          id: "pg-3-1",
-          title: "July Week 1 Sync Notes",
-          lastEdited: "Jul 2",
-          content:
-            "# Weekly Engineering Sync - July 2026\n\n**Attendees:** Alex, Elena, Marcus, Sarah\n\n## Action Items:\n1. [ ] Finalize UI color tokens for dark mode theme.\n2. [x] Optimize WebSocket reconnection strategy for real-time reminders.\n3. [ ] Prepare staging environment for client demo on Friday.\n\n## Discussion Notes:\n- Latency dropped by 35% after migrating prompt caching to edge nodes.\n- Aivora Weather widget received overwhelmingly positive user feedback during beta testing!",
-        },
-        {
-          id: "pg-3-2",
-          title: "Sprint Goal Tracker",
-          lastEdited: "Jun 30",
-          content:
-            "# Sprint 24 Goals\n\n- Deliver Notebooks Gallery View with digital planner cover aesthetics.\n- Ensure 100% responsiveness across mobile, tablet, and widescreen.\n- Zero high-priority lint errors.",
-        },
-      ],
-    },
-    {
-      id: "nb-4",
-      title: "Synthesizers & Modular Audio Setup",
-      folder: "Personal Projects",
-      tags: ["#music", "#synth", "#hobby"],
-      coverTheme: "retro-confetti",
-      lastEdited: "Jun 28",
-      favorite: false,
-      sourcesCount: 6,
-      pages: [
-        {
-          id: "pg-4-1",
-          title: "Eurorack Modular Synth Dream Rig",
-          lastEdited: "Jun 28",
-          content:
-            "# Eurorack Modular Synth Dream Rig\n\n## Essential Modules to Acquire:\n- **Make Noise Maths:** Dual analog control voltage generator.\n- **Intellijel Morgasmatron:** Dual state-variable filter with analog saturation.\n- **Mutable Instruments Beads:** Granular texture synthesizer for ambient soundscapes.\n\n*Next step:* Build custom wooden 6U case over the weekend.",
-        },
-      ],
-    },
-    {
-      id: "nb-5",
-      title: "Mastering the Modern HTML & Web Roadmap",
-      folder: "Study Notes",
-      tags: ["#html", "#web", "#frontend"],
-      coverTheme: "floral-garden",
-      lastEdited: "3 days ago",
-      favorite: true,
-      sourcesCount: 15,
-      pages: [
-        {
-          id: "pg-5-1",
-          title: "Semantic HTML5 & Accessibility",
-          lastEdited: "3 days ago",
-          content:
-            "# Semantic HTML5 & Accessibility Mastery\n\nProper HTML structure forms the bedrock of accessible web applications.\n\n## Core Principles:\n- Use `<header>`, `<main>`, `<aside>`, and `<footer>` instead of generic `<div>` soup.\n- Always associate labels with inputs using `htmlFor` or nesting.\n- Maintain logical heading hierarchy (`<h1>` down to `<h6>`).",
-        },
-        {
-          id: "pg-5-2",
-          title: "Modern CSS Grid & Flexbox Patterns",
-          lastEdited: "4 days ago",
-          content:
-            "# Layout Architectures\n\nCombining CSS Grid for macro layouts and Flexbox for component alignment gives maximum responsiveness without media query clutter.",
-        },
-      ],
-    },
-    {
-      id: "nb-6",
-      title: "Fundamentals of Managerial Economics",
-      folder: "Study Notes",
-      tags: ["#finance", "#economics", "#mba"],
-      coverTheme: "autumn-burgundy",
-      lastEdited: "5 days ago",
-      favorite: false,
-      sourcesCount: 31,
-      pages: [
-        {
-          id: "pg-6-1",
-          title: "Supply, Demand & Equilibrium Analysis",
-          lastEdited: "5 days ago",
-          content:
-            "# Microeconomics Essentials\n\nUnderstanding price elasticity of demand allows firms to optimize revenue structures during inflationary cycles.\n\n$$\nE_d = \\frac{\\% \\Delta Q_d}{\\% \\Delta P}\n$$\n\nWhen $|E_d| > 1$, demand is elastic and price reductions increase total revenue.",
-        },
-      ],
-    },
-    {
-      id: "nb-7",
-      title: "Building Ambient AI Expense Agents",
-      folder: "AI Research",
-      tags: ["#fintech", "#agents", "#ocr"],
-      coverTheme: "tropical-leaves",
-      lastEdited: "Jun 25",
-      favorite: true,
-      sourcesCount: 9,
-      pages: [
-        {
-          id: "pg-7-1",
-          title: "Receipt OCR & Information Extraction",
-          lastEdited: "Jun 25",
-          content:
-            "# Ambient Financial Intelligence\n\nBy running multimodal vision models on user receipt photos, Aivora can automatically parse merchant names, line items, taxes, and dates into structured budget entries.",
-        },
-      ],
-    },
-    {
-      id: "nb-8",
-      title: "Software Engineering Revision Essentials",
-      folder: "Study Notes",
-      tags: ["#algorithms", "#cs", "#interview"],
-      coverTheme: "winter-snow",
-      lastEdited: "Jun 20",
-      favorite: false,
-      sourcesCount: 12,
-      pages: [
-        {
-          id: "pg-8-1",
-          title: "System Design & Scalability Principles",
-          lastEdited: "Jun 20",
-          content:
-            "# Scaled Distributed Systems\n\n## Caching Layers:\n- **Redis / Memcached:** In-memory key-value stores for hot database queries.\n- **CDN Edge Workers:** Caching static assets and API responses close to end users.",
-        },
-      ],
-    },
-    {
-      id: "nb-9",
-      title: "Digital Planner & Weekly Goal Tracker",
-      folder: "Personal Projects",
-      tags: ["#habits", "#goals", "#planner"],
-      coverTheme: "tea-time",
-      lastEdited: "Jun 18",
-      favorite: true,
-      sourcesCount: 10,
-      pages: [
-        {
-          id: "pg-9-1",
-          title: "Weekly Habit & Workout Log",
-          lastEdited: "Jun 18",
-          content:
-            "# Weekly Fitness & Habit Tracker\n\n- [x] Monday: 5km Morning Run & Core Workout\n- [x] Tuesday: Upper Body Strength Training\n- [x] Wednesday: Yoga & Meditation Session\n- [ ] Thursday: High Intensity Interval Training\n- [ ] Friday: Active Recovery Walk",
-        },
-      ],
-    },
-    {
-      id: "nb-10",
-      title: "Tokyo 2026 Autumn Leaf Excursion",
-      folder: "Travel Plans",
-      tags: ["#japan", "#tokyo", "#autumn"],
-      coverTheme: "peach-waves",
-      lastEdited: "Jun 15",
-      favorite: false,
-      sourcesCount: 14,
-      pages: [
-        {
-          id: "pg-10-1",
-          title: "Kyoto & Tokyo Train Schedules",
-          lastEdited: "Jun 15",
-          content:
-            "# Shinkansen & Subway Guide\n\n- Book JR Pass 30 days in advance.\n- Take the Nozomi bullet train from Tokyo Station to Kyoto (approx 2h 15m).\n- Best viewing spots for Momiji (autumn leaves): Arashiyama Bamboo Grove and Kiyomizu-dera.",
-        },
-      ],
-    },
-    {
-      id: "nb-11",
-      title: "Deep Learning & Transformers Mathematics",
-      folder: "AI Research",
-      tags: ["#math", "#transformers", "#ml"],
-      coverTheme: "purple-dream",
-      lastEdited: "Jun 12",
-      favorite: false,
-      sourcesCount: 18,
-      pages: [
-        {
-          id: "pg-11-1",
-          title: "Attention Mechanism Mathematics",
-          lastEdited: "Jun 12",
-          content:
-            "# Scaled Dot-Product Attention\n\nThe fundamental equation powering modern Large Language Models:\n\n$$\n\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V\n$$\n\nWhere $Q$, $K$, and $V$ represent the query, key, and value projection matrices respectively.",
-        },
-      ],
-    },
-    {
-      id: "nb-12",
-      title: "Bohemian Interior Design & Mood Board",
-      folder: "Personal Projects",
-      tags: ["#design", "#home", "#decor"],
-      coverTheme: "boho-lace",
-      lastEdited: "Jun 10",
-      favorite: false,
-      sourcesCount: 7,
-      pages: [
-        {
-          id: "pg-12-1",
-          title: "Living Room Color Palette & Fabrics",
-          lastEdited: "Jun 10",
-          content:
-            "# Boho Living Room Mood Board\n\n## Color Palette:\n- Terracotta Rust (`#C85A32`)\n- Warm Cream (`#FDF8F5`)\n- Sage Green (`#8BA888`)\n- Natural Rattan & Oak textures\n\n## Shopping List:\n- [x] Macramé wall hanging from artisan market\n- [ ] Velvet accent armchair in emerald green\n- [ ] Jute area rug (8x10 ft)",
-        },
-      ],
-    },
-  ]);
+  const [notebooks, setNotebooks] = useState<NotebookDocument[]>(MOCK_NOTEBOOKS);
 
   // Active state for opened notebook
   const [activeNotebookId, setActiveNotebookId] = useState<string>("nb-1");
@@ -809,11 +770,11 @@ export function AivoraNotes() {
   });
 
   // Filter pages inside the active notebook
-  const filteredPages = activeNotebook.pages.filter(
+  const filteredPages = activeNotebook?.pages.filter(
     (pg) =>
       pg.title.toLowerCase().includes(pageSearchQuery.toLowerCase()) ||
       pg.content.toLowerCase().includes(pageSearchQuery.toLowerCase())
-  );
+  ) || [];
 
   const wordCount = activePage.content.trim().split(/\s+/).filter(Boolean).length;
   const charCount = activePage.content.length;
@@ -869,13 +830,6 @@ export function AivoraNotes() {
                 )}
               </div>
 
-              <button
-                onClick={() => setNewModalOpen(true)}
-                className="px-5 py-2.5 bg-gradient-to-r from-primary via-purple-600 to-pink-500 text-white rounded-2xl font-bold text-xs shadow-lg pink-shadow hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-base">add_circle</span>
-                <span>Create New Notebook</span>
-              </button>
             </div>
           </div>
 

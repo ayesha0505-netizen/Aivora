@@ -26,8 +26,11 @@ const beVietnamPro = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Aivora | Authentication",
+  title: "Aivora",
   description: "Your Playful AI Companion & Personal Life Manager",
+  icons: {
+    icon: "/logo-icon.png",
+  },
 };
 
 export default function RootLayout({
