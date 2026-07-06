@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=Aivora+Logo" alt="Aivora Logo" width="150" height="150" />
+  <img src="./assets/logo.png" alt="Aivora Logo" width="150" height="150" />
   <h1>Aivora</h1>
   <h3><i>Your Everyday AI Companion</i></h3>
   <p><strong>Kaggle AI Agents Capstone - Concierge Agents Track</strong></p>
